@@ -7,6 +7,7 @@ import {
   CreditCard,
   Upload,
   ShieldCheck,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -102,6 +103,20 @@ export default async function DashboardLayout({
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right">Manage Agents</TooltipContent>
+              </Tooltip>
+            )}
+             {isAdmin && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href="/dashboard/students"
+                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  >
+                    <Users className="h-5 w-5" />
+                    <span className="sr-only">Manage Students</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">Manage Students</TooltipContent>
               </Tooltip>
             )}
           </nav>
