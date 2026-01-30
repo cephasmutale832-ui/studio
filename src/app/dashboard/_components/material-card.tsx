@@ -26,15 +26,20 @@ export function MaterialCard({ material, image }: MaterialCardProps) {
   const [isPlayerOpen, setPlayerOpen] = useState(false);
 
   const handleActionClick = () => {
-    if (material.type === 'video' && material.url) {
-      setPlayerOpen(true);
-    } else if ((material.type === 'document' || material.type === 'past-paper') && material.url) {
-      window.open(material.url, '_blank');
+    if (material.type === 'video') {
+      if (material.url) {
+        setPlayerOpen(true);
+      } else {
+        alert("This video is not yet available.");
+      }
+    } else if (material.type === 'document' || material.type === 'past-paper') {
+      if (material.url) {
+        window.open(material.url, '_blank');
+      } else {
+        alert("This document is not yet available.");
+      }
     } else if (material.type === 'quiz') {
       alert("This quiz is not yet available.");
-    } else if (material.type === 'document' || material.type === 'past-paper') {
-      // Placeholder for documents without a URL
-      alert("This document is not yet available.");
     }
   };
 
@@ -92,7 +97,7 @@ export function MaterialCard({ material, image }: MaterialCardProps) {
           <CardTitle className="text-lg font-headline">{material.title}</CardTitle>
         </CardContent>
         <CardFooter className="p-4 pt-0">
-            <Button className="w-full border-accent text-accent" variant="outline" onClick={handleActionClick} disabled={!material.url && material.type !== 'quiz'}>
+            <Button className="w-full border-accent text-accent" variant="outline" onClick={handleActionClick}>
             {getButtonText()}
           </Button>
         </CardFooter>
