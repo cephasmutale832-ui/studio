@@ -55,13 +55,6 @@ export default function PaymentPage() {
       }, 3000);
       return () => clearTimeout(timer);
     }
-    if (state?.success === false && state.message) {
-       toast({
-        title: "Validation Failed",
-        description: state.message,
-        variant: 'destructive',
-      });
-    }
   }, [state, router, toast]);
 
   return (
