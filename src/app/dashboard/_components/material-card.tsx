@@ -29,26 +29,31 @@ export function MaterialCard({ material, image, userRole }: MaterialCardProps) {
   const { progress, updateProgress } = useMaterialProgress(material.id);
 
   const handleActionClick = () => {
-    // Mark as complete on interaction.
-    // In a real app, this would be more sophisticated, e.g., based on video watch time.
-    if (progress < 100) {
-        updateProgress(100);
-    }
-
+    // For quizzes, alert and mark as complete.
     if (material.type === 'quiz') {
       alert("This quiz is not yet available.");
+      if (progress < 100) {
+        updateProgress(100);
+      }
       return;
     }
 
     if (!material.url) {
       alert(`This ${material.type} is not yet available.`);
+       if (progress < 100) {
+        updateProgress(100);
+      }
       return;
     }
 
-    // Use built-in player for Google Drive videos, otherwise open in new tab.
+    // Use built-in player for Google Drive videos, which handles its own progress.
     if (material.type === 'video' && material.url.includes('drive.google.com')) {
       setPlayerOpen(true);
     } else {
+      // For all other materials (documents, external videos), mark as complete and open in a new tab.
+      if (progress < 100) {
+        updateProgress(100);
+      }
       window.open(material.url, '_blank');
     }
   };
@@ -95,6 +100,7 @@ export function MaterialCard({ material, image, userRole }: MaterialCardProps) {
           onClose={() => setPlayerOpen(false)}
           title={material.title}
           gdriveLink={material.url}
+          updateProgress={updateProgress}
         />
       )}
       <DeleteMaterialDialog 

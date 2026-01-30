@@ -38,9 +38,11 @@ export function useMaterialProgress(materialId: string) {
     setProgress(store[materialId] || 0);
   }, [materialId]);
 
-  const updateProgress = useCallback((newProgress: number) => {
+  const updateProgress = useCallback((newProgress: number | ((prevProgress: number) => number)) => {
     const store = getProgressStore();
-    const cappedProgress = Math.min(100, Math.max(0, newProgress));
+    const currentProgress = store[materialId] || 0;
+    const resolvedProgress = typeof newProgress === 'function' ? newProgress(currentProgress) : newProgress;
+    const cappedProgress = Math.min(100, Math.max(0, resolvedProgress));
     store[materialId] = cappedProgress;
     setProgressStore(store);
     setProgress(cappedProgress);

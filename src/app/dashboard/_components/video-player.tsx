@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -17,9 +18,10 @@ interface VideoPlayerProps {
   onClose: () => void;
   title: string;
   gdriveLink: string;
+  updateProgress: (newProgress: number | ((prevProgress: number) => number)) => void;
 }
 
-export function VideoPlayer({ isOpen, onClose, title, gdriveLink }: VideoPlayerProps) {
+export function VideoPlayer({ isOpen, onClose, title, gdriveLink, updateProgress }: VideoPlayerProps) {
 
   const getFileId = (url: string): string | null => {
     if (!url) return null;
@@ -31,13 +33,35 @@ export function VideoPlayer({ isOpen, onClose, title, gdriveLink }: VideoPlayerP
   const embedUrl = fileId ? `https://drive.google.com/file/d/${fileId}/preview` : '';
   const downloadUrl = fileId ? `https://drive.google.com/uc?export=download&id=${fileId}` : '#';
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Simulate video playback progress. In a real scenario, you would use
+    // a video player API to get actual watch time.
+    const progressInterval = setInterval(() => {
+      updateProgress(prevProgress => {
+        if (prevProgress >= 100) {
+          clearInterval(progressInterval);
+          return 100;
+        }
+        // Increment progress by 5 every 3 seconds to simulate watching
+        return prevProgress + 5;
+      });
+    }, 3000); // Update every 3 seconds
+
+    // Cleanup on close
+    return () => {
+      clearInterval(progressInterval);
+    };
+  }, [isOpen, updateProgress]);
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl w-full h-auto p-0">
         <DialogHeader className="p-6 pb-2">
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
-            Watch the video below. You can also download it for offline viewing.
+            Watch the video below. Your progress is being tracked automatically while this window is open.
           </DialogDescription>
         </DialogHeader>
         <div className="aspect-video w-full">
