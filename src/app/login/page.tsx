@@ -30,18 +30,18 @@ export default function LoginPage() {
             <Logo />
           </div>
           <CardTitle className="text-2xl font-headline">Welcome Back</CardTitle>
-          <CardDescription>Enter your credentials to access your account.</CardDescription>
+          <CardDescription>Enter your credentials to access your account. <br /> Hint: Use <code className="font-mono p-1 bg-muted rounded">student@example.com</code> and <code className="font-mono p-1 bg-muted rounded">password123</code>.</CardDescription>
         </CardHeader>
         <CardContent>
           <form action={formAction} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" placeholder="m@example.com" required />
+              <Input id="email" name="email" type="email" placeholder="m@example.com" required defaultValue="student@example.com" />
                {state?.errors?.email && <p className="text-sm font-medium text-destructive">{state.errors.email[0]}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" name="password" type="password" required />
+              <Input id="password" name="password" type="password" required defaultValue="password123" />
                {state?.errors?.password && <p className="text-sm font-medium text-destructive">{state.errors.password[0]}</p>}
             </div>
             <SubmitButton />

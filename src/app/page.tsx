@@ -38,6 +38,7 @@ export default function HomePage() {
               <Label htmlFor="code">Access Code</Label>
               <Input id="code" name="code" placeholder="TRIAL123" required />
               {state?.errors?.code && <p className="text-sm font-medium text-destructive">{state.errors.code[0]}</p>}
+              <p className="text-xs text-muted-foreground">Hint: Use the code <code className="font-mono p-1 bg-muted rounded">TRIAL123</code> to start a trial.</p>
             </div>
             <SubmitButton />
           </form>
