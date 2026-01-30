@@ -30,23 +30,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  webpack(config) {
-    // Find the default Next.js rule for images and exclude SVGs
-    const imageRule = config.module.rules.find(
-        (rule: any) => rule.test?.test && rule.test.test('.svg')
-    );
-    if (imageRule) {
-        imageRule.exclude = /\.svg$/i;
-    }
-
-    // Add a new rule to handle SVGs with @svgr/webpack
-    config.module.rules.push({
-      test: /\.svg$/i,
-      issuer: /\.[jt]sx?$/,
-      use: ['@svgr/webpack'],
-    });
-    return config;
-  }
 };
 
 export default nextConfig;
