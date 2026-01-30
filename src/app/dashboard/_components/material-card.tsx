@@ -22,6 +22,7 @@ interface Material {
   type: 'video' | 'document' | 'quiz';
   imageId: string;
   url?: string;
+  subject?: string;
 }
 
 interface MaterialCardProps {
