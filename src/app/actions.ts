@@ -4,6 +4,7 @@
 import { z } from 'zod';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const accessCodeSchema = z.object({
   code: z.string().min(6, { message: 'Access code must be at least 6 characters.' }),
@@ -14,13 +15,15 @@ const loginSchema = z.object({
   password: z.string().min(1, { message: 'Password is required.' }),
 });
 
+const avatarImage = PlaceHolderImages.find(img => img.id === 'avatar-1');
+
 // Mock user data
 const MOCK_USER = {
   id: '1',
   name: 'Alex Doe',
   email: 'student@example.com',
   password: 'password123',
-  avatar: '/avatars/1.png'
+  avatar: avatarImage?.imageUrl ?? ''
 };
 
 const MOCK_TRIAL_CODE = 'TRIAL123';
