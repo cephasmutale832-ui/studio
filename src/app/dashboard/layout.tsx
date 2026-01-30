@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/tooltip";
 import { UserNav } from "@/components/user-nav";
 import { Logo } from "../logo";
+import { Chatbot } from "@/components/chatbot";
 
 
 export default async function DashboardLayout({
@@ -114,6 +115,7 @@ export default async function DashboardLayout({
             {children}
           </main>
         </div>
+        <Chatbot />
       </div>
     </TooltipProvider>
   );
