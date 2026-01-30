@@ -19,7 +19,7 @@ import { VideoPlayer } from './video-player';
 interface Material {
   id: string;
   title: string;
-  type: 'video' | 'document' | 'quiz';
+  type: 'video' | 'document' | 'quiz' | 'past-paper';
   imageId: string;
   url?: string;
   subject?: string;
@@ -36,11 +36,11 @@ export function MaterialCard({ material, image }: MaterialCardProps) {
   const handleActionClick = () => {
     if (material.type === 'video' && material.url) {
       setPlayerOpen(true);
-    } else if (material.type === 'document' && material.url) {
+    } else if ((material.type === 'document' || material.type === 'past-paper') && material.url) {
       window.open(material.url, '_blank');
     } else if (material.type === 'quiz') {
       alert("This quiz is not yet available.");
-    } else if (material.type === 'document') {
+    } else if (material.type === 'document' || material.type === 'past-paper') {
       // Placeholder for documents without a URL
       alert("This document is not yet available.");
     }
@@ -51,6 +51,7 @@ export function MaterialCard({ material, image }: MaterialCardProps) {
       case 'video':
         return <Video className="mr-1 h-3 w-3" />;
       case 'document':
+      case 'past-paper':
         return <FileText className="mr-1 h-3 w-3" />;
       case 'quiz':
         return <ClipboardCheck className="mr-1 h-3 w-3" />;
@@ -65,6 +66,8 @@ export function MaterialCard({ material, image }: MaterialCardProps) {
         return 'Watch Now';
       case 'document':
         return 'Read Document';
+      case 'past-paper':
+        return 'View Paper';
       case 'quiz':
         return 'Start Quiz';
       default:
@@ -89,7 +92,7 @@ export function MaterialCard({ material, image }: MaterialCardProps) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             <Badge variant="secondary" className="absolute top-3 right-3">
               {getIcon()}
-              {material.type.charAt(0).toUpperCase() + material.type.slice(1)}
+              {material.type === 'past-paper' ? 'Past Paper' : material.type.charAt(0).toUpperCase() + material.type.slice(1)}
             </Badge>
           </div>
         </CardHeader>

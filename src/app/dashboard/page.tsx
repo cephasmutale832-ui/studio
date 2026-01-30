@@ -22,9 +22,19 @@ import {
 } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { type ImagePlaceholder } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, Folder } from "lucide-react";
 import { MaterialCard } from "./_components/material-card";
+
+interface Material {
+  id: string;
+  title: string;
+  type: 'video' | 'document' | 'quiz' | 'past-paper';
+  imageId: string;
+  url?: string;
+  subject?: string;
+}
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -34,31 +44,35 @@ export default async function DashboardPage() {
 
   const isTrialExpired = session.isTrial && new Date(session.expires) < new Date();
   
-  const allMaterials = [
-    // Videos
-    { id: '1', title: 'Introduction to Algebra', type: 'video' as const, subject: 'Mathematics', imageId: 'course-1', url: 'https://drive.google.com/file/d/1B-c1mZJgY2gqNqJ_1vjYkX_3a7bJ0oY/view?usp=sharing' },
-    { id: '3', title: 'History of the World', type: 'video' as const, subject: 'History', imageId: 'course-3', url: 'https://drive.google.com/file/d/1_sZt-VIMzNss_C1aJgG_a3GgVq-pC_4w/view?usp=sharing'},
-    { id: '5', title: 'Literature Studies: The Classics', type: 'video' as const, subject: 'Literature', imageId: 'course-5', url: 'https://drive.google.com/file/d/1_sZt-VIMzNss_C1aJgG_a3GgVq-pC_4w/view?usp=sharing' },
-    { id: 'v-phys-1', title: 'Fundamentals of Physics', type: 'video' as const, subject: 'Physics', imageId: 'course-2', url: 'https://drive.google.com/file/d/1_sZt-VIMzNss_C1aJgG_a3GgVq-pC_4w/view?usp=sharing' },
-
-
-    // Documents
-    { id: '2', title: 'Advanced Physics Notes', type: 'document' as const, subject: 'Physics', imageId: 'course-2' },
-    { id: '4', title: 'Chemistry 101 Notes', type: 'document' as const, subject: 'Chemistry', imageId: 'course-4' },
-    { id: '6', title: 'Computer Science Basics', type: 'document' as const, subject: 'Computer Science', imageId: 'course-6' },
-    { id: 'd-math-1', title: 'Algebra Practice Sheet', type: 'document' as const, subject: 'Mathematics', imageId: 'course-1' },
-
-    // Quizzes
-    { id: 'q1', title: 'Algebra Basics Quiz', type: 'quiz' as const, subject: 'Mathematics', imageId: 'quiz-1' },
-    { id: 'q2', title: 'World History Challenge', type: 'quiz' as const, subject: 'History', imageId: 'quiz-2' },
-    { id: 'q3', title: 'Chemistry Fundamentals Quiz', type: 'quiz' as const, subject: 'Chemistry', imageId: 'quiz-2' },
+  const allMaterials: Material[] = [
+    // Data will be added dynamically later
   ];
 
-  const subjects = [...new Set(allMaterials.map(m => m.subject))].sort();
+  const subjects = [
+    'MATHS P1',
+    'MATHS P2',
+    'SCIENCE P1',
+    'SCIENCE P2',
+    'BIOLOGY P1',
+    'BIOLOGY P2',
+    'ENGLISH P1',
+    'ENGLISH P2',
+    'RELIGIOUS EDUCATION',
+    'CIVIC EDUCATION',
+    'GEOGRAPHY P1',
+    'GEOGRAPHY P2',
+    'COMMERCE',
+    'PRINCIPLES OF ACC.',
+    'ADDMA P1',
+    'ADDMA P2',
+    'PURE CHEMISTRY',
+    'PURE PHYSICS P2',
+  ];
+  
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 2020 + 1 }, (_, i) => 2020 + i).reverse();
 
-  const getImage = (id: string) => {
+  const getImage = (id: string): ImagePlaceholder | undefined => {
     return PlaceHolderImages.find(img => img.id === id);
   }
 
@@ -104,7 +118,7 @@ export default async function DashboardPage() {
                       </div>
                     </AccordionTrigger>
                     <AccordionContent>
-                      <p className="p-4 text-muted-foreground">Past papers for {subject} will be available here, sorted by year. This feature is coming soon!</p>
+                      <p className="p-4 text-muted-foreground">Past papers for {subject} will be available here, sorted by year.</p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pt-4 pl-6">
                         {years.map(year => (
                           <Button key={year} variant="outline" className="justify-start" disabled>
@@ -122,7 +136,6 @@ export default async function DashboardPage() {
             <Accordion type="single" collapsible className="w-full">
                 {subjects.map(subject => {
                     const subjectMaterials = allMaterials.filter(m => m.type === 'video' && m.subject === subject);
-                    if (subjectMaterials.length === 0) return null;
                     return (
                         <AccordionItem value={subject} key={subject}>
                             <AccordionTrigger className="text-lg font-semibold">
@@ -132,14 +145,18 @@ export default async function DashboardPage() {
                                 </div>
                             </AccordionTrigger>
                             <AccordionContent>
-                                <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
-                                {subjectMaterials.map((material) => {
-                                    const image = getImage(material.imageId);
-                                    return (
-                                    <MaterialCard key={material.id} material={material} image={image} />
-                                    )
-                                })}
-                                </div>
+                                {subjectMaterials.length > 0 ? (
+                                    <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
+                                    {subjectMaterials.map((material) => {
+                                        const image = getImage(material.imageId);
+                                        return (
+                                        <MaterialCard key={material.id} material={material} image={image} />
+                                        )
+                                    })}
+                                    </div>
+                                ) : (
+                                    <p className="p-4 text-muted-foreground">No videos available for {subject} yet.</p>
+                                )}
                             </AccordionContent>
                         </AccordionItem>
                     )
@@ -151,7 +168,6 @@ export default async function DashboardPage() {
              <Accordion type="single" collapsible className="w-full">
                 {subjects.map(subject => {
                     const subjectMaterials = allMaterials.filter(m => m.type === 'document' && m.subject === subject);
-                    if (subjectMaterials.length === 0) return null;
                     return (
                         <AccordionItem value={subject} key={subject}>
                             <AccordionTrigger className="text-lg font-semibold">
@@ -161,14 +177,18 @@ export default async function DashboardPage() {
                                 </div>
                             </AccordionTrigger>
                             <AccordionContent>
-                                <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
-                                {subjectMaterials.map((material) => {
-                                    const image = getImage(material.imageId);
-                                    return (
-                                    <MaterialCard key={material.id} material={material} image={image} />
-                                    )
-                                })}
-                                </div>
+                                {subjectMaterials.length > 0 ? (
+                                    <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
+                                    {subjectMaterials.map((material) => {
+                                        const image = getImage(material.imageId);
+                                        return (
+                                        <MaterialCard key={material.id} material={material} image={image} />
+                                        )
+                                    })}
+                                    </div>
+                                ) : (
+                                     <p className="p-4 text-muted-foreground">No documents available for {subject} yet.</p>
+                                )}
                             </AccordionContent>
                         </AccordionItem>
                     )
@@ -180,7 +200,6 @@ export default async function DashboardPage() {
              <Accordion type="single" collapsible className="w-full">
                 {subjects.map(subject => {
                     const subjectMaterials = allMaterials.filter(m => m.type === 'quiz' && m.subject === subject);
-                    if (subjectMaterials.length === 0) return null;
                     return (
                         <AccordionItem value={subject} key={subject}>
                             <AccordionTrigger className="text-lg font-semibold">
@@ -190,14 +209,18 @@ export default async function DashboardPage() {
                                 </div>
                             </AccordionTrigger>
                             <AccordionContent>
-                                <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
-                                {subjectMaterials.map((material) => {
-                                    const image = getImage(material.imageId);
-                                    return (
-                                    <MaterialCard key={material.id} material={material} image={image} />
-                                    )
-                                })}
-                                </div>
+                                {subjectMaterials.length > 0 ? (
+                                    <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
+                                    {subjectMaterials.map((material) => {
+                                        const image = getImage(material.imageId);
+                                        return (
+                                        <MaterialCard key={material.id} material={material} image={image} />
+                                        )
+                                    })}
+                                    </div>
+                                ) : (
+                                    <p className="p-4 text-muted-foreground">No quizzes available for {subject} yet.</p>
+                                )}
                             </AccordionContent>
                         </AccordionItem>
                     )
