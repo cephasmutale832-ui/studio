@@ -47,7 +47,7 @@ export default async function DashboardLayout({
               <div className="h-5 w-5 transition-all group-hover:scale-110">
                 <Logo />
               </div>
-              <span className="sr-only">AccessGate Pro</span>
+              <span className="sr-only">Mango SmartLearning</span>
             </Link>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -105,7 +105,7 @@ export default async function DashboardLayout({
         </aside>
         <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
           <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-            <h1 className="text-xl font-headline text-primary">AccessGate Pro</h1>
+            <h1 className="text-xl font-headline text-primary">Mango SmartLearning</h1>
             <div className="relative ml-auto flex-1 md:grow-0">
             </div>
             <UserNav user={session.user} />

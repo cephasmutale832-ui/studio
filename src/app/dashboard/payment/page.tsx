@@ -86,7 +86,7 @@ export default function PaymentPage() {
               <Textarea
                 id="transactionDetails"
                 name="transactionDetails"
-                placeholder="e.g., 'Confirmation: You have sent $20 to AccessGate Pro. Transaction ID: 12345ABC...'"
+                placeholder="e.g., 'Confirmation: You have sent $20 to Mango SmartLearning. Transaction ID: 12345ABC...'"
                 className="min-h-[120px]"
                 required
               />

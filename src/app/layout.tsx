@@ -16,8 +16,8 @@ const fontSpaceGrotesk = Space_Grotesk({
 
 
 export const metadata: Metadata = {
-  title: 'AccessGate Pro',
-  description: 'Secure access to your educational materials.',
+  title: 'Mango SmartLearning',
+  description: 'Your partner in modern education.',
 };
 
 export default function RootLayout({

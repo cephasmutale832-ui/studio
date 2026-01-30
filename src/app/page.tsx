@@ -46,8 +46,8 @@ export default function HomePage() {
            <div className="mx-auto mb-4 h-12 w-12 text-primary">
             <Logo />
           </div>
-          <CardTitle className="text-2xl font-headline">AccessGate Pro</CardTitle>
-          <CardDescription>Secure access to your educational materials.</CardDescription>
+          <CardTitle className="text-2xl font-headline">Mango SmartLearning</CardTitle>
+          <CardDescription>Your partner in modern education.</CardDescription>
         </CardHeader>
         <CardContent>
             <Tabs defaultValue="student">
