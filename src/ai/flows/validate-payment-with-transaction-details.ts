@@ -39,7 +39,7 @@ const validatePaymentPrompt = ai.definePrompt({
   name: 'validatePaymentPrompt',
   input: {schema: ValidatePaymentInputSchema},
   output: {schema: ValidatePaymentOutputSchema},
-  prompt: `You are an expert payment validation assistant for a service called Mango SmartLearning. A student has uploaded the following transaction details: {{{transactionDetails}}}. Determine if this represents a valid payment for accessing educational materials. To be considered valid, the transaction details must explicitly mention 'money sent to Cephas Mutale' AND 'amount ZMW70'. Return a JSON object. The isValidPayment field should be true if both keywords are present, and false otherwise. The validationResult field should contain a detailed explanation of your reasoning. Be brief.`,
+  prompt: `You are an expert payment validation assistant for a service called Mango SmartLearning. A student has uploaded the following transaction details: {{{transactionDetails}}}. Determine if this represents a valid payment for accessing educational materials. To be considered valid, the transaction details must explicitly mention 'money sent to Cephas Mutale' AND 'amount ZMW70'. The isValidPayment field should be true if both keywords are present, and false otherwise. The validationResult field should contain a detailed explanation of your reasoning. Be brief.`,
 });
 
 const validatePaymentFlow = ai.defineFlow(
@@ -50,6 +50,9 @@ const validatePaymentFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await validatePaymentPrompt(input);
-    return output!;
+    if (!output) {
+      throw new Error('The AI model did not return a valid response. Please try again.');
+    }
+    return output;
   }
 );

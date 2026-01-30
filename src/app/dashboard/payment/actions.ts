@@ -36,6 +36,9 @@ export async function validatePaymentAction(
 
   } catch (error) {
     console.error('AI validation failed:', error);
-    return { success: false, message: 'An unexpected error occurred during validation. Please try again later.' };
+    const message = error instanceof Error 
+        ? error.message 
+        : 'An unexpected error occurred during validation. Please try again later.';
+    return { success: false, message };
   }
 }
