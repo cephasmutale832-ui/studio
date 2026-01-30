@@ -46,8 +46,8 @@ export default function HomePage() {
            <div className="mx-auto mb-4 h-12 w-12 text-primary">
             <Logo />
           </div>
-          <p className="text-sm font-medium text-muted-foreground">ELEVATION ONLINE TUITIONS</p>
           <CardTitle className="text-2xl font-headline">Mango SmartLearning</CardTitle>
+          <p className="text-sm font-medium text-muted-foreground">ELEVATION ONLINE TUITIONS</p>
           <CardDescription>Your partner in modern education.</CardDescription>
         </CardHeader>
         <CardContent>
