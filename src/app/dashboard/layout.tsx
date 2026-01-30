@@ -6,7 +6,6 @@ import {
   User,
   CreditCard,
   Upload,
-  ShieldCheck,
   Users,
   PanelLeft,
 } from "lucide-react";
@@ -43,6 +42,7 @@ export default async function DashboardLayout({
 
   const { user } = session;
   const isAdmin = user.role === 'admin';
+  const isStudent = user.role === 'student';
   const canUpload = user.role === 'admin' || user.role === 'agent';
 
   return (
@@ -101,28 +101,14 @@ export default async function DashboardLayout({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
-                    href="/dashboard/agents"
-                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                  >
-                    <ShieldCheck className="h-5 w-5" />
-                    <span className="sr-only">Manage Agents</span>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent side="right">Manage Agents</TooltipContent>
-              </Tooltip>
-            )}
-             {isAdmin && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link
-                    href="/dashboard/students"
+                    href="/dashboard/users"
                     className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                   >
                     <Users className="h-5 w-5" />
-                    <span className="sr-only">Manage Students</span>
+                    <span className="sr-only">Manage Users</span>
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent side="right">Manage Students</TooltipContent>
+                <TooltipContent side="right">Manage Users</TooltipContent>
               </Tooltip>
             )}
           </nav>
@@ -186,20 +172,11 @@ export default async function DashboardLayout({
                   )}
                   {isAdmin && (
                     <Link
-                      href="/dashboard/agents"
-                      className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-                    >
-                      <ShieldCheck className="h-5 w-5" />
-                      Agents
-                    </Link>
-                  )}
-                  {isAdmin && (
-                    <Link
-                      href="/dashboard/students"
+                      href="/dashboard/users"
                       className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                     >
                       <Users className="h-5 w-5" />
-                      Students
+                      Users
                     </Link>
                   )}
                   <Link
@@ -221,6 +198,25 @@ export default async function DashboardLayout({
             {children}
           </main>
         </div>
+        {isStudent && (
+          <a
+            href="https://wa.me/260774177403"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fixed bottom-24 right-6 h-14 w-14 rounded-full bg-green-500 hover:bg-green-600 shadow-lg z-50 flex items-center justify-center text-white"
+            aria-label="Contact on WhatsApp"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.894 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.89-5.464 0-9.888 4.418-9.889 9.886-.001 2.269.655 4.357 1.849 6.069l-1.254 4.575 4.644-1.216z"/>
+            </svg>
+          </a>
+        )}
         <Chatbot />
       </div>
     </TooltipProvider>

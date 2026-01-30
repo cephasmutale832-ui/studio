@@ -2,23 +2,30 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import {
   Card,
   CardHeader,
 } from "@/components/ui/card";
 import { type ImagePlaceholder } from '@/lib/placeholder-images';
 import { VideoPlayer } from './video-player';
-import { type Material } from '@/lib/types';
+import { type Material, type User } from '@/lib/types';
 import { useMaterialProgress } from '@/hooks/use-material-progress';
 import { ProgressCircle } from './progress-circle';
+import { Button } from '@/components/ui/button';
+import { Edit, Trash2 } from 'lucide-react';
+import { DeleteMaterialDialog } from './delete-material-dialog';
+
 
 interface MaterialCardProps {
   material: Material;
   image?: ImagePlaceholder;
+  userRole?: User['role'];
 }
 
-export function MaterialCard({ material, image }: MaterialCardProps) {
+export function MaterialCard({ material, image, userRole }: MaterialCardProps) {
   const [isPlayerOpen, setPlayerOpen] = useState(false);
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const { progress, updateProgress } = useMaterialProgress(material.id);
 
   const handleActionClick = () => {
@@ -49,11 +56,10 @@ export function MaterialCard({ material, image }: MaterialCardProps) {
   return (
     <>
       <Card 
-        onClick={handleActionClick}
-        className="overflow-hidden transition-transform hover:scale-105 hover:shadow-lg cursor-pointer"
+        className="overflow-hidden transition-transform hover:scale-105 hover:shadow-lg cursor-pointer group"
       >
         <CardHeader className="p-0">
-          <div className="relative aspect-video">
+          <div className="relative aspect-video" onClick={handleActionClick}>
             {image && (
                 <Image
                 src={image.imageUrl}
@@ -67,6 +73,18 @@ export function MaterialCard({ material, image }: MaterialCardProps) {
             <div className="absolute top-2 right-2 z-10">
               <ProgressCircle progress={progress} />
             </div>
+             {userRole === 'admin' && (
+                <div className="absolute top-2 left-2 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button asChild size="icon" variant="secondary" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
+                        <Link href={`/dashboard/materials/edit/${material.id}`}>
+                            <Edit className="h-4 w-4" />
+                        </Link>
+                    </Button>
+                    <Button size="icon" variant="destructive" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); setDeleteDialogOpen(true); }}>
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                </div>
+            )}
           </div>
         </CardHeader>
       </Card>
@@ -79,6 +97,12 @@ export function MaterialCard({ material, image }: MaterialCardProps) {
           gdriveLink={material.url}
         />
       )}
+      <DeleteMaterialDialog 
+        isOpen={isDeleteDialogOpen} 
+        onClose={() => setDeleteDialogOpen(false)}
+        materialId={material.id}
+        materialTitle={material.title}
+      />
     </>
   );
 }

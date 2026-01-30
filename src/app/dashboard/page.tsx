@@ -37,6 +37,7 @@ export default async function DashboardPage() {
     redirect("/");
   }
 
+  const { user } = session;
   const isTrialExpired = session.isTrial && new Date(session.expires) < new Date();
   
   const materialsFilePath = path.join(process.cwd(), 'src', 'lib', 'materials.json');
@@ -113,7 +114,7 @@ export default async function DashboardPage() {
                             {subjectMaterials.map((material) => {
                                 const image = getImage(material.imageId);
                                 return (
-                                <MaterialCard key={material.id} material={material} image={image} />
+                                <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />
                                 )
                             })}
                           </div>
@@ -154,7 +155,7 @@ export default async function DashboardPage() {
                                     {subjectMaterials.map((material) => {
                                         const image = getImage(material.imageId);
                                         return (
-                                        <MaterialCard key={material.id} material={material} image={image} />
+                                        <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />
                                         )
                                     })}
                                     </div>
@@ -186,7 +187,7 @@ export default async function DashboardPage() {
                                     {subjectMaterials.map((material) => {
                                         const image = getImage(material.imageId);
                                         return (
-                                        <MaterialCard key={material.id} material={material} image={image} />
+                                        <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />
                                         )
                                     })}
                                     </div>
@@ -218,7 +219,7 @@ export default async function DashboardPage() {
                                     {subjectMaterials.map((material) => {
                                         const image = getImage(material.imageId);
                                         return (
-                                        <MaterialCard key={material.id} material={material} image={image} />
+                                        <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />
                                         )
                                     })}
                                     </div>
