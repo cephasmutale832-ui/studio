@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -10,6 +9,8 @@ import {
 import { type ImagePlaceholder } from '@/lib/placeholder-images';
 import { VideoPlayer } from './video-player';
 import { type Material } from '@/lib/types';
+import { useMaterialProgress } from '@/hooks/use-material-progress';
+import { ProgressCircle } from './progress-circle';
 
 interface MaterialCardProps {
   material: Material;
@@ -18,8 +19,15 @@ interface MaterialCardProps {
 
 export function MaterialCard({ material, image }: MaterialCardProps) {
   const [isPlayerOpen, setPlayerOpen] = useState(false);
+  const { progress, updateProgress } = useMaterialProgress(material.id);
 
   const handleActionClick = () => {
+    // Mark as complete on interaction.
+    // In a real app, this would be more sophisticated, e.g., based on video watch time.
+    if (progress < 100) {
+        updateProgress(100);
+    }
+
     if (material.type === 'quiz') {
       alert("This quiz is not yet available.");
       return;
@@ -56,6 +64,9 @@ export function MaterialCard({ material, image }: MaterialCardProps) {
               />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="absolute top-2 right-2 z-10">
+              <ProgressCircle progress={progress} />
+            </div>
           </div>
         </CardHeader>
       </Card>
