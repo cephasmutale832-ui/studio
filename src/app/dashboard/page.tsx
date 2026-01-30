@@ -26,6 +26,7 @@ import { type ImagePlaceholder } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, Folder } from "lucide-react";
 import { MaterialCard } from "./_components/material-card";
+import { subjects } from "@/lib/subjects";
 
 interface Material {
   id: string;
@@ -46,27 +47,6 @@ export default async function DashboardPage() {
   
   const allMaterials: Material[] = [
     // Data will be added dynamically later
-  ];
-
-  const subjects = [
-    'MATHS P1',
-    'MATHS P2',
-    'SCIENCE P1',
-    'SCIENCE P2',
-    'BIOLOGY P1',
-    'BIOLOGY P2',
-    'ENGLISH P1',
-    'ENGLISH P2',
-    'RELIGIOUS EDUCATION',
-    'CIVIC EDUCATION',
-    'GEOGRAPHY P1',
-    'GEOGRAPHY P2',
-    'COMMERCE',
-    'PRINCIPLES OF ACC.',
-    'ADDMA P1',
-    'ADDMA P2',
-    'PURE CHEMISTRY',
-    'PURE PHYSICS P2',
   ];
   
   const currentYear = new Date().getFullYear();

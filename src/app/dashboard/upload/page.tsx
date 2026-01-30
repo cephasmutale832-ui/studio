@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 import UploadForm from "./_components/upload-form";
+import { subjects } from "@/lib/subjects";
 
 export default async function UploadPage() {
     const session = await getSession();
@@ -46,7 +47,7 @@ export default async function UploadPage() {
                     Add a new video or document for students.
                 </p>
             </div>
-            <UploadForm />
+            <UploadForm subjects={subjects} />
         </div>
     );
 }

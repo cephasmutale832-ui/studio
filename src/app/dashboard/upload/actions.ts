@@ -3,13 +3,6 @@
 
 import { z } from 'zod';
 
-const ACCEPTED_DOCUMENT_TYPES = [
-    'application/pdf', 
-    'text/plain', 
-    'application/msword', 
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-];
-
 const uploadSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters.'),
   description: z.string().optional(),
@@ -72,10 +65,6 @@ export async function uploadMaterialAction(
     const file = formData.get('file') as File;
     if (!file || file.size === 0) {
         return { success: false, message: 'A file is required for this material type.', errors: { file: ['Please select a file to upload.'] } };
-    }
-
-    if (!ACCEPTED_DOCUMENT_TYPES.includes(file.type)) {
-        return { success: false, message: 'Invalid file type.', errors: { file: [`Only PDF, DOC, and TXT files are allowed. You provided: ${file.type}`] } };
     }
 
     // In a real app, you would handle file storage here (e.g., upload to Firebase Storage)

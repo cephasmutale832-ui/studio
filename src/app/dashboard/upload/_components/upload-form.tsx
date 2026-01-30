@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useFormState, useFormStatus } from 'react-dom';
@@ -42,7 +43,7 @@ function SubmitButton() {
   );
 }
 
-export default function UploadForm() {
+export default function UploadForm({ subjects }: { subjects: string[] }) {
   const [state, formAction] = useFormState(uploadMaterialAction, { success: null, message: '' });
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
@@ -83,7 +84,16 @@ export default function UploadForm() {
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="subject">Subject / Section</Label>
-                    <Input id="subject" name="subject" placeholder="e.g., Mathematics" required />
+                    <Select name="subject" required>
+                        <SelectTrigger id="subject">
+                            <SelectValue placeholder="Select a subject" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {subjects.map(subject => (
+                                <SelectItem key={subject} value={subject}>{subject}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                     {state.errors?.subject && <p className="text-sm font-medium text-destructive">{state.errors.subject[0]}</p>}
                 </div>
             </div>
@@ -128,9 +138,9 @@ export default function UploadForm() {
                 {materialType === 'document' || materialType === 'past-paper' ? (
                   <div className="space-y-2">
                       <Label htmlFor="file">File</Label>
-                      <Input id="file" name="file" type="file" required accept="application/pdf,.txt,.doc,.docx" />
+                      <Input id="file" name="file" type="file" required />
                       {state.errors?.file && <p className="text-sm font-medium text-destructive">{state.errors.file[0]}</p>}
-                      <p className="text-xs text-muted-foreground">Allowed: PDF, DOC, TXT</p>
+                      <p className="text-xs text-muted-foreground">Upload any file from your device.</p>
                   </div>
                 ) : null}
             </div>
