@@ -92,7 +92,7 @@ export function MaterialCard({ material, image }: MaterialCardProps) {
           <CardTitle className="text-lg font-headline">{material.title}</CardTitle>
         </CardContent>
         <CardFooter className="p-4 pt-0">
-            <Button className="w-full" variant="outline" style={{color: 'hsl(var(--accent))', borderColor: 'hsl(var(--accent))'}} onClick={handleActionClick} disabled={!material.url && material.type !== 'quiz'}>
+            <Button className="w-full border-accent text-accent" variant="outline" onClick={handleActionClick} disabled={!material.url && material.type !== 'quiz'}>
             {getButtonText()}
           </Button>
         </CardFooter>

@@ -7,4 +7,5 @@ export type ImagePlaceholder = {
   imageHint: string;
 };
 
-export const PlaceHolderImages: ImagePlaceholder[] = data.placeholderImages;
+// Ensure that placeholderImages is an array, even if the JSON is malformed or empty.
+export const PlaceHolderImages: ImagePlaceholder[] = Array.isArray(data?.placeholderImages) ? data.placeholderImages : [];
