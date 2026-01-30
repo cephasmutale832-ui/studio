@@ -41,6 +41,18 @@
       "description": "User profile picture",
       "imageUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3Njk3NDY1MTR8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "person portrait"
+    },
+    {
+      "id": "quiz-1",
+      "description": "A quiz on algebra basics",
+      "imageUrl": "https://images.unsplash.com/photo-1599508704512-2f19efd1e35f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxxdWl6fGVufDB8fHx8MTc3MDAzNTI5NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "quiz illustration"
+    },
+    {
+      "id": "quiz-2",
+      "description": "A quiz on world history",
+      "imageUrl": "https://images.unsplash.com/photo-1477587458883-47145ed94245?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoaXN0b3J5fGVufDB8fHx8MTc3MDAzNTM4N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "history books"
     }
   ]
 }
