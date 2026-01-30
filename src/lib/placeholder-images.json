@@ -1,3 +1,46 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "course-1",
+      "description": "Introduction to Algebra video thumbnail",
+      "imageUrl": "https://images.unsplash.com/photo-1647936019088-a07c6a9180b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtYXRoZW1hdGljcyUyMHRleHRib29rfGVufDB8fHx8MTc2OTc3OTc2MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mathematics textbook"
+    },
+    {
+      "id": "course-2",
+      "description": "Advanced Physics past paper document icon",
+      "imageUrl": "https://images.unsplash.com/photo-1608037222011-cbf484177126?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxzY2llbmNlJTIwZXhwZXJpbWVudHxlbnwwfHx8fDE3Njk2OTQ0Nzh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "science experiment"
+    },
+    {
+      "id": "course-3",
+      "description": "History of the World video thumbnail",
+      "imageUrl": "https://images.unsplash.com/photo-1764724215384-e122f56672c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxhbmNpZW50JTIwbWFwfGVufDB8fHx8MTc2OTcwOTQ2NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "ancient map"
+    },
+    {
+      "id": "course-4",
+      "description": "Chemistry 101 document icon",
+      "imageUrl": "https://images.unsplash.com/photo-1733426509854-10931d84009a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8Y2hlbWlzdHJ5JTIwYmVha2Vyc3xlbnwwfHx8fDE3Njk3Nzk3NjB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "chemistry beakers"
+    },
+    {
+      "id": "course-5",
+      "description": "Literature studies video thumbnail",
+      "imageUrl": "https://images.unsplash.com/photo-1621347891240-e856b95ec627?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzdGFjayUyMGJvb2tzfGVufDB8fHx8MTc2OTc0MDUxMHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "stack books"
+    },
+    {
+      "id": "course-6",
+      "description": "Computer Science basics document icon",
+      "imageUrl": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjb21wdXRlciUyMGNvZGV8ZW58MHx8fHwxNzY5NzQ0OTM3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "computer code"
+    },
+    {
+      "id": "avatar-1",
+      "description": "User profile picture",
+      "imageUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3Njk3NDY1MTR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    }
+  ]
 }
