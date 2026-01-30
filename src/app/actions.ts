@@ -6,8 +6,11 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
-const accessCodeSchema = z.object({
-  code: z.string().min(6, { message: 'Access code must be at least 6 characters.' }),
+// Schemas
+const signupSchema = z.object({
+  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  email: z.string().email({ message: 'Please enter a valid email.' }),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
 });
 
 const loginSchema = z.object({
@@ -17,7 +20,8 @@ const loginSchema = z.object({
 
 const avatarImage = PlaceHolderImages.find(img => img.id === 'avatar-1');
 
-// Mock user data
+// Mock user data - This is not persistent. Users will be lost on server restart.
+// In a real app, you would use a database.
 const MOCK_USERS = [
   {
     id: '1',
@@ -50,52 +54,19 @@ const MOCK_USERS = [
     password: 'password123',
     avatar: '',
     role: 'agent' as const,
+  },
+  {
+    id: 'student-1',
+    name: 'Existing Student',
+    email: 'student@example.com',
+    password: 'password123',
+    avatar: '',
+    role: 'student' as const,
   }
 ];
 
 
-const MOCK_TRIAL_CODE = 'TRIAL123';
-
-export async function validateAccessCode(prevState: any, formData: FormData) {
-  const validatedFields = accessCodeSchema.safeParse({
-    code: formData.get('code'),
-  });
-
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Invalid data.',
-    };
-  }
-  
-  const { code } = validatedFields.data;
-
-  if (code.toUpperCase() !== MOCK_TRIAL_CODE) {
-    return {
-      errors: { code: ['Invalid access code.'] },
-      message: 'Invalid access code.',
-    };
-  }
-
-  // Set auth cookie for 7 days
-  const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-  const session = {
-    user: {
-      id: 'trial-user',
-      name: 'Trial User',
-      email: 'trial@example.com',
-      avatar: '',
-      role: 'student' as const,
-    },
-    expires: expires.toISOString(),
-    isTrial: true,
-  };
-
-  cookies().set('session', JSON.stringify(session), { expires, httpOnly: true });
-  
-  redirect('/dashboard');
-}
-
+// Staff Login Action
 export async function login(prevState: any, formData: FormData) {
   const validatedFields = loginSchema.safeParse({
     email: formData.get('email'),
@@ -113,14 +84,14 @@ export async function login(prevState: any, formData: FormData) {
 
   const user = MOCK_USERS.find(u => u.email === email && u.password === password);
 
-  if (!user) {
+  if (!user || user.role === 'student') {
     return {
-      errors: { email: ['Invalid email or password.'] },
+      errors: { email: ['Invalid email or password for staff.'] },
       message: 'Invalid credentials.',
     };
   }
 
-  // Set auth cookie with no expiry (for mock purposes)
+  // Set auth cookie for 30 days
   const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
   const session = {
      user: {
@@ -132,6 +103,100 @@ export async function login(prevState: any, formData: FormData) {
     },
     expires: expires.toISOString(),
     isTrial: false,
+  };
+
+  cookies().set('session', JSON.stringify(session), { expires, httpOnly: true });
+
+  redirect('/dashboard');
+}
+
+// New Student Signup Action
+export async function studentSignup(prevState: any, formData: FormData) {
+  const validatedFields = signupSchema.safeParse({
+    name: formData.get('name'),
+    email: formData.get('email'),
+    password: formData.get('password'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Invalid data.',
+    };
+  }
+  
+  const { name, email, password } = validatedFields.data;
+
+  // Check if user already exists
+  if (MOCK_USERS.some(u => u.email === email)) {
+    return {
+      errors: { email: ['An account with this email already exists.'] },
+      message: 'User already exists.',
+    };
+  }
+  
+  const newUser = {
+    id: `student-${Date.now()}`,
+    name,
+    email,
+    password, // In a real app, hash and salt this!
+    avatar: '',
+    role: 'student' as const,
+  };
+
+  MOCK_USERS.push(newUser); // Add to in-memory store
+
+  // Set auth cookie for 7 days for the trial period
+  const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const session = {
+    user: newUser,
+    expires: expires.toISOString(),
+    isTrial: true, // This is a new user, so they get a trial
+  };
+
+  cookies().set('session', JSON.stringify(session), { expires, httpOnly: true });
+  
+  redirect('/dashboard');
+}
+
+// New Student Login Action
+export async function studentLogin(prevState: any, formData: FormData) {
+  const validatedFields = loginSchema.safeParse({
+    email: formData.get('email'),
+    password: formData.get('password'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Invalid data.',
+    };
+  }
+
+  const { email, password } = validatedFields.data;
+
+  const user = MOCK_USERS.find(u => u.email === email && u.password === password && u.role === 'student');
+
+  if (!user) {
+    return {
+      errors: { email: ['Invalid email or password.'] },
+      message: 'Invalid credentials.',
+    };
+  }
+
+  // Set auth cookie for 30 days.
+  // We assume an existing student logging in is no longer on a trial.
+  const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  const session = {
+     user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+      role: user.role,
+    },
+    expires: expires.toISOString(),
+    isTrial: false, // Existing student, trial is over.
   };
 
   cookies().set('session', JSON.stringify(session), { expires, httpOnly: true });

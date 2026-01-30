@@ -2,7 +2,7 @@
 'use client';
 
 import { useFormState, useFormStatus } from 'react-dom';
-import { validateAccessCode, login } from '@/app/actions';
+import { studentSignup, studentLogin, login } from '@/app/actions';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -17,16 +17,25 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Logo } from '@/app/logo';
 
-function AccessCodeSubmitButton() {
+function SignUpSubmitButton() {
   const { pending } = useFormStatus();
   return (
     <Button className="w-full" type="submit" aria-disabled={pending} disabled={pending}>
-      {pending ? 'Verifying...' : 'Start Learning'}
+      {pending ? 'Signing Up...' : 'Sign Up for 7-Day Trial'}
     </Button>
   );
 }
 
-function LoginSubmitButton() {
+function StudentLoginSubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button className="w-full" type="submit" aria-disabled={pending} disabled={pending}>
+      {pending ? 'Signing In...' : 'Sign In'}
+    </Button>
+  );
+}
+
+function StaffLoginSubmitButton() {
     const { pending } = useFormStatus();
     return (
       <Button className="w-full" type="submit" aria-disabled={pending} disabled={pending}>
@@ -36,8 +45,9 @@ function LoginSubmitButton() {
 }
 
 export default function HomePage() {
-  const [accessCodeState, accessCodeFormAction] = useFormState(validateAccessCode, null);
-  const [loginState, loginFormAction] = useFormState(login, null);
+  const [signupState, signupFormAction] = useFormState(studentSignup, null);
+  const [studentLoginState, studentLoginFormAction] = useFormState(studentLogin, null);
+  const [staffLoginState, staffLoginFormAction] = useFormState(login, null);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-background">
@@ -57,32 +67,71 @@ export default function HomePage() {
                     <TabsTrigger value="staff">Staff</TabsTrigger>
                 </TabsList>
                 <TabsContent value="student" className="pt-4">
-                     <form action={accessCodeFormAction} className="space-y-4">
-                        <div className="space-y-2">
-                        <Label htmlFor="code">7-Day Trial Access Code</Label>
-                        <Input id="code" name="code" placeholder="TRIAL123" required />
-                        {accessCodeState?.errors?.code && <p className="text-sm font-medium text-destructive">{accessCodeState.errors.code[0]}</p>}
-                        <p className="text-xs text-muted-foreground">Hint: Use the code <code className="font-mono p-1 bg-muted rounded">TRIAL123</code> to start a trial.</p>
+                  <Tabs defaultValue="signup">
+                    <TabsList className="grid w-full grid-cols-2">
+                      <TabsTrigger value="signup">New Student</TabsTrigger>
+                      <TabsTrigger value="signin">Existing Student</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="signup" className="pt-4">
+                      <form action={signupFormAction} className="space-y-4">
+                        <CardDescription className="text-center">
+                            Sign up to start your 7-day free trial.
+                        </CardDescription>
+                         <div className="space-y-2">
+                          <Label htmlFor="name">Full Name</Label>
+                          <Input id="name" name="name" placeholder="John Doe" required />
+                          {signupState?.errors?.name && <p className="text-sm font-medium text-destructive">{signupState.errors.name[0]}</p>}
                         </div>
-                        <AccessCodeSubmitButton />
-                    </form>
+                        <div className="space-y-2">
+                          <Label htmlFor="signup-email">Email</Label>
+                          <Input id="signup-email" name="email" type="email" placeholder="student@example.com" required />
+                          {signupState?.errors?.email && <p className="text-sm font-medium text-destructive">{signupState.errors.email[0]}</p>}
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="signup-password">Password</Label>
+                          <Input id="signup-password" name="password" type="password" required />
+                           {signupState?.errors?.password && <p className="text-sm font-medium text-destructive">{signupState.errors.password[0]}</p>}
+                        </div>
+                        <SignUpSubmitButton />
+                      </form>
+                    </TabsContent>
+                    <TabsContent value="signin" className="pt-4">
+                      <form action={studentLoginFormAction} className="space-y-4">
+                        <CardDescription className="text-center">
+                            Sign in to your account.
+                        </CardDescription>
+                        <div className="space-y-2">
+                          <Label htmlFor="student-email">Email</Label>
+                          <Input id="student-email" name="email" type="email" placeholder="student@example.com" required />
+                           {studentLoginState?.errors?.email && <p className="text-sm font-medium text-destructive">{studentLoginState.errors.email[0]}</p>}
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="student-password">Password</Label>
+                          <Input id="student-password" name="password" type="password" required />
+                           {studentLoginState?.errors?.password && <p className="text-sm font-medium text-destructive">{studentLoginState.errors.password[0]}</p>}
+                        </div>
+                        <StudentLoginSubmitButton />
+                         <p className="text-xs text-muted-foreground text-center pt-2">Hint: Use <code className="font-mono p-1 bg-muted rounded">student@example.com</code> and <code className="font-mono p-1 bg-muted rounded">password123</code> for existing student.</p>
+                      </form>
+                    </TabsContent>
+                  </Tabs>
                 </TabsContent>
                 <TabsContent value="staff" className="pt-4">
                     <CardDescription className="text-center mb-4">
                         Admin and Agent login.
                     </CardDescription>
-                    <form action={loginFormAction} className="space-y-4">
+                    <form action={staffLoginFormAction} className="space-y-4">
                         <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input id="email" name="email" type="email" placeholder="m@example.com" required />
-                        {loginState?.errors?.email && <p className="text-sm font-medium text-destructive">{loginState.errors.email[0]}</p>}
+                        <Label htmlFor="staff-email">Email</Label>
+                        <Input id="staff-email" name="email" type="email" placeholder="m@example.com" required />
+                        {staffLoginState?.errors?.email && <p className="text-sm font-medium text-destructive">{staffLoginState.errors.email[0]}</p>}
                         </div>
                         <div className="space-y-2">
-                        <Label htmlFor="password">Password</Label>
-                        <Input id="password" name="password" type="password" required />
-                        {loginState?.errors?.password && <p className="text-sm font-medium text-destructive">{loginState.errors.password[0]}</p>}
+                        <Label htmlFor="staff-password">Password</Label>
+                        <Input id="staff-password" name="password" type="password" required />
+                        {staffLoginState?.errors?.password && <p className="text-sm font-medium text-destructive">{staffLoginState.errors.password[0]}</p>}
                         </div>
-                        <LoginSubmitButton />
+                        <StaffLoginSubmitButton />
                         <p className="text-xs text-muted-foreground text-center pt-2">Hint: Use <code className="font-mono p-1 bg-muted rounded">cephasmutale832@gmail.com</code> and <code className="font-mono p-1 bg-muted rounded">Cep12345TY</code> for admin.</p>
                     </form>
                 </TabsContent>
