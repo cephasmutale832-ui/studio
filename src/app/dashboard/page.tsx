@@ -1,22 +1,18 @@
+
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import Image from 'next/image';
 import Link from 'next/link';
 
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+  Alert,
+  AlertDescription,
+  AlertTitle
+} from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, FileText, Video } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
+import { MaterialCard } from "./_components/material-card";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -27,12 +23,12 @@ export default async function DashboardPage() {
   const isTrialExpired = session.isTrial && new Date(session.expires) < new Date();
   
   const materials = [
-    { id: '1', title: 'Introduction to Algebra', type: 'video', imageId: 'course-1' },
-    { id: '2', title: 'Advanced Physics Past Paper', type: 'document', imageId: 'course-2' },
-    { id: '3', title: 'History of the World', type: 'video', imageId: 'course-3' },
-    { id: '4', title: 'Chemistry 101 Notes', type: 'document', imageId: 'course-4' },
-    { id: '5', title: 'Literature Studies: The Classics', type: 'video', imageId: 'course-5' },
-    { id: '6', title: 'Computer Science Basics', type: 'document', imageId: 'course-6' },
+    { id: '1', title: 'Introduction to Algebra', type: 'video' as const, imageId: 'course-1', url: 'https://drive.google.com/file/d/1B-c1mZJgY2gqNqJ_1vjYkX_3a7bJ0oY/view?usp=sharing' },
+    { id: '2', title: 'Advanced Physics Past Paper', type: 'document' as const, imageId: 'course-2' },
+    { id: '3', title: 'History of the World', type: 'video' as const, imageId: 'course-3', url: 'https://drive.google.com/file/d/1_sZt-VIMzNss_C1aJgG_a3GgVq-pC_4w/view?usp=sharing'},
+    { id: '4', title: 'Chemistry 101 Notes', type: 'document' as const, imageId: 'course-4' },
+    { id: '5', title: 'Literature Studies: The Classics', type: 'video' as const, imageId: 'course-5' },
+    { id: '6', title: 'Computer Science Basics', type: 'document' as const, imageId: 'course-6' },
   ];
 
   const getImage = (id: string) => {
@@ -65,34 +61,7 @@ export default async function DashboardPage() {
         {materials.map((material) => {
           const image = getImage(material.imageId);
           return (
-            <Card key={material.id} className="overflow-hidden transition-transform hover:scale-105 hover:shadow-lg">
-              <CardHeader className="p-0">
-                <div className="relative aspect-video">
-                  {image && (
-                     <Image
-                      src={image.imageUrl}
-                      alt={image.description}
-                      fill
-                      className="object-cover"
-                      data-ai-hint={image.imageHint}
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <Badge variant="secondary" className="absolute top-3 right-3">
-                    {material.type === 'video' ? <Video className="mr-1 h-3 w-3" /> : <FileText className="mr-1 h-3 w-3" />}
-                    {material.type.charAt(0).toUpperCase() + material.type.slice(1)}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="p-4">
-                <CardTitle className="text-lg font-headline">{material.title}</CardTitle>
-              </CardContent>
-              <CardFooter className="p-4 pt-0">
-                 <Button className="w-full" variant="outline" style={{color: 'hsl(var(--accent))', borderColor: 'hsl(var(--accent))'}}>
-                  {material.type === 'video' ? 'Watch Now' : 'Read Document'}
-                </Button>
-              </CardFooter>
-            </Card>
+            <MaterialCard key={material.id} material={material} image={image} />
           )
         })}
       </div>

@@ -2,7 +2,7 @@
 'use client';
 
 import { useFormState, useFormStatus } from 'react-dom';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { LoaderCircle } from 'lucide-react';
 
@@ -47,6 +47,7 @@ export default function UploadForm() {
   const [state, formAction] = useFormState(uploadMaterialAction, { success: null, message: '' });
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
+  const [materialType, setMaterialType] = useState('video');
   
   useEffect(() => {
     if (state.success === true) {
@@ -55,6 +56,7 @@ export default function UploadForm() {
         description: state.message,
       });
       formRef.current?.reset();
+      setMaterialType('video');
     } else if (state.success === false && state.message) {
       toast({
         title: 'Upload Failed',
@@ -94,7 +96,7 @@ export default function UploadForm() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                     <Label htmlFor="materialType">Material Type</Label>
-                    <Select name="materialType" required defaultValue="video">
+                    <Select name="materialType" required defaultValue="video" onValueChange={(value) => setMaterialType(value)}>
                         <SelectTrigger id="materialType">
                             <SelectValue placeholder="Select a type" />
                         </SelectTrigger>
@@ -105,12 +107,22 @@ export default function UploadForm() {
                     </Select>
                      {state.errors?.materialType && <p className="text-sm font-medium text-destructive">{state.errors.materialType[0]}</p>}
                 </div>
-                <div className="space-y-2">
-                    <Label htmlFor="file">File</Label>
-                    <Input id="file" name="file" type="file" required accept="video/mp4,application/pdf,.txt,.doc,.docx" />
-                    {state.errors?.file && <p className="text-sm font-medium text-destructive">{state.errors.file[0]}</p>}
-                    <p className="text-xs text-muted-foreground">Allowed: MP4, PDF, DOC, TXT</p>
-                </div>
+                
+                {materialType === 'video' ? (
+                  <div className="space-y-2">
+                    <Label htmlFor="gdrive-link">Google Drive Link</Label>
+                    <Input id="gdrive-link" name="gdrive-link" type="url" placeholder="https://drive.google.com/file/d/..." required />
+                    {state.errors?.['gdrive-link'] && <p className="text-sm font-medium text-destructive">{state.errors['gdrive-link'][0]}</p>}
+                    <p className="text-xs text-muted-foreground">Paste a shareable Google Drive link.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                      <Label htmlFor="file">File</Label>
+                      <Input id="file" name="file" type="file" required accept="application/pdf,.txt,.doc,.docx" />
+                      {state.errors?.file && <p className="text-sm font-medium text-destructive">{state.errors.file[0]}</p>}
+                      <p className="text-xs text-muted-foreground">Allowed: PDF, DOC, TXT</p>
+                  </div>
+                )}
             </div>
           </CardContent>
           <CardFooter>
