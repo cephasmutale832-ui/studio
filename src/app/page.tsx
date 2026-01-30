@@ -157,7 +157,7 @@ export default function HomePage() {
                                 {staffLoginState?.errors?.password && <p className="text-sm font-medium text-destructive">{staffLoginState.errors.password[0]}</p>}
                                 </div>
                                 <StaffLoginSubmitButton />
-                                <p className="text-xs text-muted-foreground text-center pt-2">Hint: Use <code className="font-mono p-1 bg-muted rounded">admin@example.com</code> and <code className="font-mono p-1 bg-muted rounded">password</code> for admin.</p>
+                                <p className="text-xs text-muted-foreground text-center pt-2">Hint: Use <code className="font-mono p-1 bg-muted rounded">cephasmutale832@gmail.com</code> and <code className="font-mono p-1 bg-muted rounded">Cep12345TY</code> for admin.</p>
                             </form>
                         </TabsContent>
                         <TabsContent value="agent" className="pt-4">
