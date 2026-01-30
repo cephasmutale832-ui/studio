@@ -4,10 +4,16 @@
 import { z } from 'zod';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { MOCK_USERS } from '@/lib/users';
 
 // Schemas
 const signupSchema = z.object({
+  name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+  email: z.string().email({ message: 'Please enter a valid email.' }),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
+});
+
+const agentSignupSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   email: z.string().email({ message: 'Please enter a valid email.' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
@@ -17,54 +23,6 @@ const loginSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
   password: z.string().min(1, { message: 'Password is required.' }),
 });
-
-const avatarImage = PlaceHolderImages.find(img => img.id === 'avatar-1');
-
-// Mock user data - This is not persistent. Users will be lost on server restart.
-// In a real app, you would use a database.
-const MOCK_USERS = [
-  {
-    id: '1',
-    name: 'Cephas Mutale',
-    email: 'cephasmutale832@gmail.com',
-    password: 'Cep12345TY',
-    avatar: avatarImage?.imageUrl ?? '',
-    role: 'admin' as const,
-  },
-   {
-    id: 'agent-1',
-    name: 'Trusted Agent 1',
-    email: 'agent1@example.com',
-    password: 'password123',
-    avatar: '',
-    role: 'agent' as const,
-  },
-  {
-    id: 'agent-2',
-    name: 'Trusted Agent 2',
-    email: 'agent2@example.com',
-    password: 'password123',
-    avatar: '',
-    role: 'agent' as const,
-  },
-  {
-    id: 'agent-3',
-    name: 'Trusted Agent 3',
-    email: 'agent3@example.com',
-    password: 'password123',
-    avatar: '',
-    role: 'agent' as const,
-  },
-  {
-    id: 'student-1',
-    name: 'Existing Student',
-    email: 'student@example.com',
-    password: 'password123',
-    avatar: '',
-    role: 'student' as const,
-  }
-];
-
 
 // Staff Login Action
 export async function login(prevState: any, formData: FormData) {
@@ -91,6 +49,13 @@ export async function login(prevState: any, formData: FormData) {
     };
   }
 
+  if (user.role === 'agent' && user.status !== 'approved') {
+    return {
+      errors: { email: ['This agent account has not been approved.'] },
+      message: 'Account not approved.',
+    };
+  }
+
   // Set auth cookie for 30 days
   const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
   const session = {
@@ -100,6 +65,7 @@ export async function login(prevState: any, formData: FormData) {
       email: user.email,
       avatar: user.avatar,
       role: user.role,
+      status: user.status,
     },
     expires: expires.toISOString(),
     isTrial: false,
@@ -158,6 +124,51 @@ export async function studentSignup(prevState: any, formData: FormData) {
   
   redirect('/dashboard');
 }
+
+// Agent Signup Action
+export async function agentSignup(prevState: any, formData: FormData) {
+  const validatedFields = agentSignupSchema.safeParse({
+    name: formData.get('name'),
+    email: formData.get('email'),
+    password: formData.get('password'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      success: false,
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Invalid data.',
+    };
+  }
+  
+  const { name, email, password } = validatedFields.data;
+
+  if (MOCK_USERS.some(u => u.email === email)) {
+    return {
+      success: false,
+      errors: { email: ['An account with this email already exists.'] },
+      message: 'User already exists.',
+    };
+  }
+  
+  const newAgent = {
+    id: `agent-${Date.now()}`,
+    name,
+    email,
+    password, // In a real app, hash and salt this!
+    avatar: '',
+    role: 'agent' as const,
+    status: 'pending' as const,
+  };
+
+  MOCK_USERS.push(newAgent);
+
+  return {
+      success: true,
+      message: "Registration successful! Your account is now pending approval from an administrator."
+  }
+}
+
 
 // New Student Login Action
 export async function studentLogin(prevState: any, formData: FormData) {

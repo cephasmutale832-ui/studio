@@ -5,6 +5,7 @@ export interface User {
   email: string;
   avatar: string;
   role: 'admin' | 'agent' | 'student';
+  status?: 'pending' | 'approved';
 }
 
 export interface Session {

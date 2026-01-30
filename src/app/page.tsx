@@ -2,8 +2,9 @@
 'use client';
 
 import { useFormState, useFormStatus } from 'react-dom';
-import { studentSignup, studentLogin, login } from '@/app/actions';
+import { agentSignup, studentSignup, studentLogin, login } from '@/app/actions';
 
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -16,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Logo } from '@/app/logo';
+import { CheckCircle } from 'lucide-react';
 
 function SignUpSubmitButton() {
   const { pending } = useFormStatus();
@@ -44,10 +46,21 @@ function StaffLoginSubmitButton() {
     );
 }
 
+function AgentSignupSubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button className="w-full" type="submit" aria-disabled={pending} disabled={pending}>
+      {pending ? 'Submitting...' : 'Sign Up for Approval'}
+    </Button>
+  );
+}
+
+
 export default function HomePage() {
   const [signupState, signupFormAction] = useFormState(studentSignup, null);
   const [studentLoginState, studentLoginFormAction] = useFormState(studentLogin, null);
   const [staffLoginState, staffLoginFormAction] = useFormState(login, null);
+  const [agentSignupState, agentSignupAction] = useFormState(agentSignup, null);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-background">
@@ -142,23 +155,63 @@ export default function HomePage() {
                             </form>
                         </TabsContent>
                         <TabsContent value="agent" className="pt-4">
-                            <form action={staffLoginFormAction} className="space-y-4">
-                                <CardDescription className="text-center">
-                                    Sign in as a trusted agent.
-                                </CardDescription>
-                                <div className="space-y-2">
-                                <Label htmlFor="agent-email">Email</Label>
-                                <Input id="agent-email" name="email" type="email" placeholder="agent@example.com" required />
-                                {staffLoginState?.errors?.email && <p className="text-sm font-medium text-destructive">{staffLoginState.errors.email[0]}</p>}
-                                </div>
-                                <div className="space-y-2">
-                                <Label htmlFor="agent-password">Password</Label>
-                                <Input id="agent-password" name="password" type="password" required />
-                                {staffLoginState?.errors?.password && <p className="text-sm font-medium text-destructive">{staffLoginState.errors.password[0]}</p>}
-                                </div>
-                                <StaffLoginSubmitButton />
-                                <p className="text-xs text-muted-foreground text-center pt-2">Hint: Use <code className="font-mono p-1 bg-muted rounded">agent1@example.com</code> and <code className="font-mono p-1 bg-muted rounded">password123</code> for agent.</p>
-                            </form>
+                           <Tabs defaultValue="signin">
+                                <TabsList className="grid w-full grid-cols-2">
+                                    <TabsTrigger value="signin">Sign In</TabsTrigger>
+                                    <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="signin" className="pt-4">
+                                     <form action={staffLoginFormAction} className="space-y-4">
+                                        <CardDescription className="text-center">
+                                            Sign in as a trusted agent.
+                                        </CardDescription>
+                                        <div className="space-y-2">
+                                        <Label htmlFor="agent-email">Email</Label>
+                                        <Input id="agent-email" name="email" type="email" placeholder="agent@example.com" required />
+                                        {staffLoginState?.errors?.email && <p className="text-sm font-medium text-destructive">{staffLoginState.errors.email[0]}</p>}
+                                        </div>
+                                        <div className="space-y-2">
+                                        <Label htmlFor="agent-password">Password</Label>
+                                        <Input id="agent-password" name="password" type="password" required />
+                                        {staffLoginState?.errors?.password && <p className="text-sm font-medium text-destructive">{staffLoginState.errors.password[0]}</p>}
+                                        </div>
+                                        <StaffLoginSubmitButton />
+                                        <p className="text-xs text-muted-foreground text-center pt-2">Hint: Use <code className="font-mono p-1 bg-muted rounded">agent1@example.com</code> and <code className="font-mono p-1 bg-muted rounded">password123</code> for an approved agent.</p>
+                                    </form>
+                                </TabsContent>
+                                <TabsContent value="signup" className="pt-4">
+                                     <form action={agentSignupAction} className="space-y-4">
+                                        <CardDescription className="text-center">
+                                            Register as a new agent to await approval.
+                                        </CardDescription>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="agent-signup-name">Full Name</Label>
+                                            <Input id="agent-signup-name" name="name" placeholder="Jane Doe" required />
+                                            {agentSignupState?.errors?.name && <p className="text-sm font-medium text-destructive">{agentSignupState.errors.name[0]}</p>}
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="agent-signup-email">Email</Label>
+                                            <Input id="agent-signup-email" name="email" type="email" placeholder="agent@example.com" required />
+                                            {agentSignupState?.errors?.email && <p className="text-sm font-medium text-destructive">{agentSignupState.errors.email[0]}</p>}
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="agent-signup-password">Password</Label>
+                                            <Input id="agent-signup-password" name="password" type="password" required />
+                                            {agentSignupState?.errors?.password && <p className="text-sm font-medium text-destructive">{agentSignupState.errors.password[0]}</p>}
+                                        </div>
+                                        <AgentSignupSubmitButton />
+                                        {agentSignupState?.success && (
+                                            <Alert>
+                                                <CheckCircle className="h-4 w-4" />
+                                                <AlertTitle>Success!</AlertTitle>
+                                                <AlertDescription>
+                                                    {agentSignupState.message}
+                                                </AlertDescription>
+                                            </Alert>
+                                        )}
+                                    </form>
+                                </TabsContent>
+                           </Tabs>
                         </TabsContent>
                     </Tabs>
                 </TabsContent>

@@ -6,6 +6,7 @@ import {
   User,
   CreditCard,
   Upload,
+  ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -34,6 +35,7 @@ export default async function DashboardLayout({
   }
 
   const { user } = session;
+  const isAdmin = user.role === 'admin';
   const canUpload = user.role === 'admin' || user.role === 'agent';
 
   return (
@@ -86,6 +88,20 @@ export default async function DashboardLayout({
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right">Upload Materials</TooltipContent>
+              </Tooltip>
+            )}
+             {isAdmin && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href="/dashboard/agents"
+                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  >
+                    <ShieldCheck className="h-5 w-5" />
+                    <span className="sr-only">Manage Agents</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">Manage Agents</TooltipContent>
               </Tooltip>
             )}
           </nav>
