@@ -15,15 +15,7 @@ import { Button } from "@/components/ui/button";
 import { FileText, Video, ClipboardCheck } from "lucide-react";
 import { type ImagePlaceholder } from '@/lib/placeholder-images';
 import { VideoPlayer } from './video-player';
-
-interface Material {
-  id: string;
-  title: string;
-  type: 'video' | 'document' | 'quiz' | 'past-paper';
-  imageId: string;
-  url?: string;
-  subject?: string;
-}
+import { type Material } from '@/lib/types';
 
 interface MaterialCardProps {
   material: Material;

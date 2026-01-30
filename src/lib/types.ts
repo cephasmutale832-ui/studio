@@ -12,3 +12,13 @@ export interface Session {
   expires: string; // ISO 8601 date string
   isTrial: boolean;
 }
+
+export interface Material {
+  id: string;
+  title: string;
+  description?: string;
+  type: 'video' | 'document' | 'quiz' | 'past-paper';
+  subject: string;
+  imageId: string;
+  url?: string;
+}

@@ -2,6 +2,8 @@
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from 'next/link';
+import fs from 'fs/promises';
+import path from 'path';
 
 import {
   Accordion,
@@ -27,15 +29,7 @@ import { cn } from "@/lib/utils";
 import { AlertTriangle, Folder } from "lucide-react";
 import { MaterialCard } from "./_components/material-card";
 import { subjects } from "@/lib/subjects";
-
-interface Material {
-  id: string;
-  title: string;
-  type: 'video' | 'document' | 'quiz' | 'past-paper';
-  imageId: string;
-  url?: string;
-  subject?: string;
-}
+import { type Material } from "@/lib/types";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -45,15 +39,29 @@ export default async function DashboardPage() {
 
   const isTrialExpired = session.isTrial && new Date(session.expires) < new Date();
   
-  const allMaterials: Material[] = [
-    // Data will be added dynamically later
-  ];
-  
+  const materialsFilePath = path.join(process.cwd(), 'src', 'lib', 'materials.json');
+  let allMaterials: Material[] = [];
+  try {
+      const fileContents = await fs.readFile(materialsFilePath, 'utf8');
+      const data = JSON.parse(fileContents);
+      allMaterials = data.materials || [];
+  } catch (error) {
+      console.log('Could not read materials file, starting with empty list.');
+  }
+
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 2020 + 1 }, (_, i) => 2020 + i).reverse();
 
   const getImage = (id: string): ImagePlaceholder | undefined => {
     return PlaceHolderImages.find(img => img.id === id);
+  }
+
+  const getMaterialsByTypeAndSubject = (type: Material['type'], subject: string) => {
+    return allMaterials.filter(m => m.type === type && m.subject === subject);
+  };
+
+  const getPastPapersBySubject = (subject: string) => {
+    return allMaterials.filter(m => m.type === 'past-paper' && m.subject === subject);
   }
 
   return (
@@ -89,33 +97,49 @@ export default async function DashboardPage() {
           
           <TabsContent value="past-papers" className="mt-6">
              <Accordion type="single" collapsible className="w-full">
-                {subjects.map(subject => (
-                  <AccordionItem value={subject} key={subject}>
-                    <AccordionTrigger className="text-lg font-semibold">
-                      <div className="flex items-center gap-3">
-                        <Folder className="h-6 w-6 text-accent" />
-                        {subject}
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <p className="p-4 text-muted-foreground">Past papers for {subject} will be available here, sorted by year.</p>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pt-4 pl-6">
-                        {years.map(year => (
-                          <Button key={year} variant="outline" className="justify-start" disabled>
-                            {year}
-                          </Button>
-                        ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
+                {subjects.map(subject => {
+                  const subjectMaterials = getPastPapersBySubject(subject);
+                  return (
+                    <AccordionItem value={subject} key={subject}>
+                      <AccordionTrigger className="text-lg font-semibold">
+                        <div className="flex items-center gap-3">
+                          <Folder className="h-6 w-6 text-accent" />
+                          {subject}
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        {subjectMaterials.length > 0 ? (
+                          <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
+                            {subjectMaterials.map((material) => {
+                                const image = getImage(material.imageId);
+                                return (
+                                <MaterialCard key={material.id} material={material} image={image} />
+                                )
+                            })}
+                          </div>
+                        ) : (
+                          <>
+                            <p className="p-4 text-muted-foreground">Past papers for {subject} will be available here, sorted by year.</p>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pt-4 pl-6">
+                              {years.map(year => (
+                                <Button key={year} variant="outline" className="justify-start" disabled>
+                                  {year}
+                                </Button>
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </AccordionContent>
+                    </AccordionItem>
+                  )
+                })}
              </Accordion>
           </TabsContent>
 
           <TabsContent value="videos" className="mt-6">
             <Accordion type="single" collapsible className="w-full">
                 {subjects.map(subject => {
-                    const subjectMaterials = allMaterials.filter(m => m.type === 'video' && m.subject === subject);
+                    const subjectMaterials = getMaterialsByTypeAndSubject('video', subject);
                     return (
                         <AccordionItem value={subject} key={subject}>
                             <AccordionTrigger className="text-lg font-semibold">
@@ -147,7 +171,7 @@ export default async function DashboardPage() {
           <TabsContent value="documents" className="mt-6">
              <Accordion type="single" collapsible className="w-full">
                 {subjects.map(subject => {
-                    const subjectMaterials = allMaterials.filter(m => m.type === 'document' && m.subject === subject);
+                    const subjectMaterials = getMaterialsByTypeAndSubject('document', subject);
                     return (
                         <AccordionItem value={subject} key={subject}>
                             <AccordionTrigger className="text-lg font-semibold">
@@ -179,7 +203,7 @@ export default async function DashboardPage() {
           <TabsContent value="quizzes" className="mt-6">
              <Accordion type="single" collapsible className="w-full">
                 {subjects.map(subject => {
-                    const subjectMaterials = allMaterials.filter(m => m.type === 'quiz' && m.subject === subject);
+                    const subjectMaterials = getMaterialsByTypeAndSubject('quiz', subject);
                     return (
                         <AccordionItem value={subject} key={subject}>
                             <AccordionTrigger className="text-lg font-semibold">
