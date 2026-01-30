@@ -117,23 +117,50 @@ export default function HomePage() {
                   </Tabs>
                 </TabsContent>
                 <TabsContent value="staff" className="pt-4">
-                    <CardDescription className="text-center mb-4">
-                        Admin and Agent login.
-                    </CardDescription>
-                    <form action={staffLoginFormAction} className="space-y-4">
-                        <div className="space-y-2">
-                        <Label htmlFor="staff-email">Email</Label>
-                        <Input id="staff-email" name="email" type="email" placeholder="m@example.com" required />
-                        {staffLoginState?.errors?.email && <p className="text-sm font-medium text-destructive">{staffLoginState.errors.email[0]}</p>}
-                        </div>
-                        <div className="space-y-2">
-                        <Label htmlFor="staff-password">Password</Label>
-                        <Input id="staff-password" name="password" type="password" required />
-                        {staffLoginState?.errors?.password && <p className="text-sm font-medium text-destructive">{staffLoginState.errors.password[0]}</p>}
-                        </div>
-                        <StaffLoginSubmitButton />
-                        <p className="text-xs text-muted-foreground text-center pt-2">Hint: Use <code className="font-mono p-1 bg-muted rounded">cephasmutale832@gmail.com</code> and <code className="font-mono p-1 bg-muted rounded">Cep12345TY</code> for admin.</p>
-                    </form>
+                    <Tabs defaultValue="admin">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="admin">Admin</TabsTrigger>
+                            <TabsTrigger value="agent">Agent</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="admin" className="pt-4">
+                            <form action={staffLoginFormAction} className="space-y-4">
+                                <CardDescription className="text-center">
+                                    Sign in as an administrator.
+                                </CardDescription>
+                                <div className="space-y-2">
+                                <Label htmlFor="admin-email">Email</Label>
+                                <Input id="admin-email" name="email" type="email" placeholder="admin@example.com" required />
+                                {staffLoginState?.errors?.email && <p className="text-sm font-medium text-destructive">{staffLoginState.errors.email[0]}</p>}
+                                </div>
+                                <div className="space-y-2">
+                                <Label htmlFor="admin-password">Password</Label>
+                                <Input id="admin-password" name="password" type="password" required />
+                                {staffLoginState?.errors?.password && <p className="text-sm font-medium text-destructive">{staffLoginState.errors.password[0]}</p>}
+                                </div>
+                                <StaffLoginSubmitButton />
+                                <p className="text-xs text-muted-foreground text-center pt-2">Hint: Use <code className="font-mono p-1 bg-muted rounded">cephasmutale832@gmail.com</code> and <code className="font-mono p-1 bg-muted rounded">Cep12345TY</code> for admin.</p>
+                            </form>
+                        </TabsContent>
+                        <TabsContent value="agent" className="pt-4">
+                            <form action={staffLoginFormAction} className="space-y-4">
+                                <CardDescription className="text-center">
+                                    Sign in as a trusted agent.
+                                </CardDescription>
+                                <div className="space-y-2">
+                                <Label htmlFor="agent-email">Email</Label>
+                                <Input id="agent-email" name="email" type="email" placeholder="agent@example.com" required />
+                                {staffLoginState?.errors?.email && <p className="text-sm font-medium text-destructive">{staffLoginState.errors.email[0]}</p>}
+                                </div>
+                                <div className="space-y-2">
+                                <Label htmlFor="agent-password">Password</Label>
+                                <Input id="agent-password" name="password" type="password" required />
+                                {staffLoginState?.errors?.password && <p className="text-sm font-medium text-destructive">{staffLoginState.errors.password[0]}</p>}
+                                </div>
+                                <StaffLoginSubmitButton />
+                                <p className="text-xs text-muted-foreground text-center pt-2">Hint: Use <code className="font-mono p-1 bg-muted rounded">agent1@example.com</code> and <code className="font-mono p-1 bg-muted rounded">password123</code> for agent.</p>
+                            </form>
+                        </TabsContent>
+                    </Tabs>
                 </TabsContent>
             </Tabs>
         </CardContent>
