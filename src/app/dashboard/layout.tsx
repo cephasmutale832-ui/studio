@@ -8,11 +8,17 @@ import {
   Upload,
   ShieldCheck,
   Users,
+  PanelLeft,
 } from "lucide-react";
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
   Tooltip,
   TooltipContent,
@@ -137,6 +143,75 @@ export default async function DashboardLayout({
         </aside>
         <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
           <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button size="icon" variant="outline" className="sm:hidden">
+                  <PanelLeft className="h-5 w-5" />
+                  <span className="sr-only">Toggle Menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="sm:max-w-xs">
+                <nav className="grid gap-6 text-lg font-medium">
+                  <Link
+                    href="/dashboard"
+                    className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
+                  >
+                    <div className="h-6 w-6 transition-all group-hover:scale-110">
+                      <Logo />
+                    </div>
+                    <span className="sr-only">Mango SmartLearning</span>
+                  </Link>
+                  <Link
+                    href="/dashboard"
+                    className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  >
+                    <Home className="h-5 w-5" />
+                    Dashboard
+                  </Link>
+                  <Link
+                    href="/dashboard/payment"
+                    className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  >
+                    <CreditCard className="h-5 w-5" />
+                    Payment
+                  </Link>
+                  {canUpload && (
+                     <Link
+                        href="/dashboard/upload"
+                        className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                      >
+                        <Upload className="h-5 w-5" />
+                        Upload
+                      </Link>
+                  )}
+                  {isAdmin && (
+                    <Link
+                      href="/dashboard/agents"
+                      className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                    >
+                      <ShieldCheck className="h-5 w-5" />
+                      Agents
+                    </Link>
+                  )}
+                  {isAdmin && (
+                    <Link
+                      href="/dashboard/students"
+                      className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                    >
+                      <Users className="h-5 w-5" />
+                      Students
+                    </Link>
+                  )}
+                  <Link
+                    href="/dashboard/account"
+                    className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                  >
+                    <User className="h-5 w-5" />
+                    Account
+                  </Link>
+                </nav>
+              </SheetContent>
+            </Sheet>
             <h1 className="text-xl font-headline text-primary">Mango SmartLearning</h1>
             <div className="relative ml-auto flex-1 md:grow-0">
             </div>
