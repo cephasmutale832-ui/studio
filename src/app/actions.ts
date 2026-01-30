@@ -4,6 +4,7 @@
 import { z } from 'zod';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import { MOCK_USERS } from '@/lib/users';
 
 // Schemas
@@ -40,7 +41,7 @@ export async function login(prevState: any, formData: FormData) {
 
   const { email, password } = validatedFields.data;
 
-  const user = MOCK_USERS.find(u => u.email === email && u.password === password);
+  const user = MOCK_USERS.find(u => u.email === email && (u as any).password === password);
 
   if (!user || user.role === 'student') {
     return {
@@ -110,7 +111,7 @@ export async function studentSignup(prevState: any, formData: FormData) {
     role: 'student' as const,
   };
 
-  MOCK_USERS.push(newUser); // Add to in-memory store
+  MOCK_USERS.push(newUser as any); // Add to in-memory store
 
   // Set auth cookie for 7 days for the trial period
   const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
@@ -161,7 +162,7 @@ export async function agentSignup(prevState: any, formData: FormData) {
     status: 'pending' as const,
   };
 
-  MOCK_USERS.push(newAgent);
+  MOCK_USERS.push(newAgent as any);
 
   return {
       success: true,
@@ -186,7 +187,7 @@ export async function studentLogin(prevState: any, formData: FormData) {
 
   const { email, password } = validatedFields.data;
 
-  const user = MOCK_USERS.find(u => u.email === email && u.password === password && u.role === 'student');
+  const user = MOCK_USERS.find(u => u.email === email && (u as any).password === password && u.role === 'student');
 
   if (!user) {
     return {
@@ -258,6 +259,13 @@ interface ProfileFormState {
 }
 
 export async function updateProfile(prevState: ProfileFormState | null, formData: FormData): Promise<ProfileFormState> {
+    const sessionCookie = cookies().get('session')?.value;
+    if (!sessionCookie) {
+        return { success: false, message: 'Authentication required.' };
+    }
+    const session = JSON.parse(sessionCookie);
+    const userId = session.user.id;
+
     const validatedFields = profileSchema.safeParse({
         name: formData.get('name'),
     });
@@ -281,14 +289,38 @@ export async function updateProfile(prevState: ProfileFormState | null, formData
         }
     }
     
-    console.log('--- Updating Profile ---');
-    console.log('Name:', name);
-    if (picture && picture.size > 0) {
-        console.log('Picture Name:', picture.name);
-        console.log('Picture Size:', picture.size);
-        console.log('Picture Type:', picture.type);
+    const userIndex = MOCK_USERS.findIndex(u => u.id === userId);
+    if (userIndex === -1) {
+        return { success: false, message: 'User not found.' };
     }
-    console.log('------------------------');
+
+    // Update user in our mock database
+    MOCK_USERS[userIndex].name = name;
+
+    // In a real app, you would handle file upload here and get a new URL
+    // For this mock, we'll just log it and not change the avatar
+    if (picture && picture.size > 0) {
+        console.log('--- Profile Picture Upload ---');
+        console.log('File Name:', picture.name);
+        console.log('File Size:', picture.size);
+        console.log('File Type:', picture.type);
+        console.log('Note: File upload is not fully implemented in this mock environment.');
+        console.log('----------------------------');
+    }
+
+    // Update the session cookie
+    const newSession = {
+        ...session,
+        user: {
+            ...session.user,
+            name: name,
+        }
+    };
+    const expires = new Date(newSession.expires);
+    cookies().set('session', JSON.stringify(newSession), { expires, httpOnly: true });
+
+    revalidatePath('/dashboard/account');
+    revalidatePath('/dashboard');
 
     return {
         success: true,
