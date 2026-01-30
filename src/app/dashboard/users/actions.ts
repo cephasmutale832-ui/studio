@@ -52,3 +52,44 @@ export async function deleteUserAction(prevState: ActionState | null, formData: 
     
     return { success: false, message: 'User not found.' };
 }
+
+
+interface SendCodeActionState {
+    success: boolean | null;
+    message?: string;
+    whatsAppLink?: string;
+}
+
+export async function sendPaymentCodeAction(prevState: SendCodeActionState | null, formData: FormData): Promise<SendCodeActionState> {
+    const userId = formData.get('userId') as string;
+    if (!userId) {
+        return { success: false, message: 'User ID is missing.' };
+    }
+
+    const userIndex = MOCK_USERS.findIndex(u => u.id === userId);
+    if (userIndex === -1) {
+        return { success: false, message: 'User not found.' };
+    }
+
+    const user = MOCK_USERS[userIndex];
+    if (user.role !== 'student' || !user.whatsappNumber) {
+        return { success: false, message: 'This user is not a student or has no WhatsApp number.' };
+    }
+    
+    // In a real app, this should be a cryptographically secure random string.
+    const paymentCode = `MANGO${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+
+    (MOCK_USERS[userIndex] as any).paymentCode = paymentCode;
+    (MOCK_USERS[userIndex] as any).paymentCodeSent = true;
+
+    const message = `Hello ${user.name}, your payment validation code for Mango SmartLearning is: ${paymentCode}`;
+    const whatsAppLink = `https://wa.me/${user.whatsappNumber.replace(/\+/g, '')}?text=${encodeURIComponent(message)}`;
+
+    revalidatePath('/dashboard/users');
+
+    return {
+        success: true,
+        message: 'Code generated. Click the button to send it via WhatsApp.',
+        whatsAppLink: whatsAppLink,
+    };
+}

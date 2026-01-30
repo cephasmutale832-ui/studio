@@ -1,10 +1,11 @@
+
 'use client';
 
 import * as React from 'react';
 import { useActionState, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
 import { type User } from '@/lib/types';
-import { approveAgentAction, deleteUserAction } from '../actions';
+import { approveAgentAction, deleteUserAction, sendPaymentCodeAction } from '../actions';
 import { useToast } from '@/hooks/use-toast';
 import { LoaderCircle, Trash2 } from 'lucide-react';
 import {
@@ -27,6 +28,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { ToastAction } from '@/components/ui/toast';
 
 function ApproveButton() {
     const { pending } = useFormStatus();
@@ -58,10 +60,20 @@ function DeleteButton() {
     );
 }
 
+function SendCodeButton() {
+    const { pending } = useFormStatus();
+    return (
+        <Button size="sm" type="submit" disabled={pending} variant="outline">
+             {pending ? 'Sending...' : 'Send Code'}
+        </Button>
+    );
+}
+
 function UserRow({ user }: { user: User }) {
     const { toast } = useToast();
     const [approveState, approveFormAction] = useActionState(approveAgentAction, null);
     const [deleteState, deleteFormAction] = useActionState(deleteUserAction, null);
+    const [sendCodeState, sendCodeFormAction] = useActionState(sendPaymentCodeAction, null);
     const [isAlertOpen, setIsAlertOpen] = React.useState(false);
 
     useEffect(() => {
@@ -86,6 +98,26 @@ function UserRow({ user }: { user: User }) {
             }
         }
     }, [deleteState, toast]);
+
+     useEffect(() => {
+        if (sendCodeState?.success && sendCodeState.whatsAppLink) {
+            toast({
+                title: 'Code Generated!',
+                description: sendCodeState.message,
+                action: (
+                    <ToastAction altText="Send" onClick={() => window.open(sendCodeState.whatsAppLink, '_blank')}>
+                        Send via WhatsApp
+                    </ToastAction>
+                ),
+            });
+        } else if (sendCodeState?.success === false) {
+            toast({
+                title: 'Error',
+                description: sendCodeState.message,
+                variant: 'destructive',
+            });
+        }
+    }, [sendCodeState, toast]);
     
     const getStatus = (user: User) => {
         if (user.role === 'agent') {
@@ -113,36 +145,50 @@ function UserRow({ user }: { user: User }) {
                 {getStatus(user)}
             </TableCell>
             <TableCell className="text-right">
-                {user.role === 'agent' && user.status === 'pending' && (
-                    <form action={approveFormAction}>
-                        <input type="hidden" name="userId" value={user.id} />
-                        <ApproveButton />
-                    </form>
-                )}
-                {user.role !== 'admin' && (
-                     <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
-                        <AlertDialogTrigger asChild>
-                            <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive">
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <form action={deleteFormAction}>
+                <div className="flex items-center justify-end gap-2">
+                    {user.role === 'agent' && user.status === 'pending' && (
+                        <form action={approveFormAction}>
                             <input type="hidden" name="userId" value={user.id} />
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                  This action cannot be undone. This will permanently delete the account for <span className="font-semibold">{user.name}</span>.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <DeleteButton />
-                            </AlertDialogFooter>
-                          </form>
-                        </AlertDialogContent>
-                    </AlertDialog>
-                )}
+                            <ApproveButton />
+                        </form>
+                    )}
+                    
+                    {user.role === 'student' && user.paymentCodeSent === false && (
+                        <form action={sendCodeFormAction}>
+                            <input type="hidden" name="userId" value={user.id} />
+                            <SendCodeButton />
+                        </form>
+                    )}
+
+                    {user.role === 'student' && user.paymentCodeSent === true && (
+                        <Button size="sm" variant="outline" disabled>Code Sent</Button>
+                    )}
+
+                    {user.role !== 'admin' && (
+                        <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+                            <AlertDialogTrigger asChild>
+                                <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive">
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                            <form action={deleteFormAction}>
+                                <input type="hidden" name="userId" value={user.id} />
+                                <AlertDialogHeader>
+                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete the account for <span className="font-semibold">{user.name}</span>.
+                                </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <DeleteButton />
+                                </AlertDialogFooter>
+                            </form>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    )}
+                </div>
             </TableCell>
         </TableRow>
     )

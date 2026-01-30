@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useActionState } from 'react';
@@ -5,7 +6,7 @@ import { useFormStatus } from 'react-dom';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { validatePaymentAction } from './actions';
+import { validatePaymentCodeAction } from './actions';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -16,7 +17,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CheckCircle2, LoaderCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -31,14 +32,14 @@ function SubmitButton() {
           Validating...
         </>
       ) : (
-        'Validate Payment'
+        'Validate Code'
       )}
     </Button>
   );
 }
 
 export default function PaymentPage() {
-  const [state, formAction] = useActionState(validatePaymentAction, null);
+  const [state, formAction] = useActionState(validatePaymentCodeAction, null);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -69,26 +70,24 @@ export default function PaymentPage() {
         <CardHeader>
           <CardTitle>Payment Validation</CardTitle>
           <CardDescription>
-            Paste your transaction details from your payment provider (e.g.,
-            Airtel Money statement, Apple Pay code) into the box below.
+            Enter the unique code sent to your WhatsApp to validate your payment and get full access.
           </CardDescription>
         </CardHeader>
         <form action={formAction}>
           <CardContent>
             <div className="grid gap-2">
-              <Label htmlFor="transactionDetails">Transaction Details</Label>
-              <Textarea
-                id="transactionDetails"
-                name="transactionDetails"
-                placeholder="e.g., 'Confirmation: You have sent $20 to Mango SmartLearning. Transaction ID: 12345ABC...'"
-                className="min-h-[120px]"
+              <Label htmlFor="validation-code">Validation Code</Label>
+              <Input
+                id="validation-code"
+                name="validationCode"
+                placeholder="e.g., MANGO123ABC"
                 required
               />
             </div>
           </CardContent>
           <CardFooter className="flex-col items-start gap-4">
             <SubmitButton />
-            {state?.result && (
+             {state?.message && (
               <Alert variant={state.success ? 'default' : 'destructive'}>
                 {state.success ? (
                   <CheckCircle2 className="h-4 w-4" />
@@ -96,17 +95,10 @@ export default function PaymentPage() {
                   <XCircle className="h-4 w-4" />
                 )}
                 <AlertTitle>
-                  {state.success ? 'Validation Successful' : 'Validation Result'}
+                  {state.success ? 'Validation Successful' : 'Validation Failed'}
                 </AlertTitle>
-                <AlertDescription>{state.result.validationResult}</AlertDescription>
+                <AlertDescription>{state.message}</AlertDescription>
               </Alert>
-            )}
-            {state?.message && !state?.result && (
-                 <Alert variant={'destructive'}>
-                  <XCircle className="h-4 w-4" />
-                  <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>{state.message}</AlertDescription>
-                </Alert>
             )}
           </CardFooter>
         </form>

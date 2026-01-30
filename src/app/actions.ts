@@ -12,6 +12,7 @@ const signupSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   email: z.string().email({ message: 'Please enter a valid email.' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
+  whatsappNumber: z.string().min(10, { message: 'Please enter a valid WhatsApp number including country code.' }),
 });
 
 const agentSignupSchema = z.object({
@@ -83,6 +84,7 @@ export async function studentSignup(prevState: any, formData: FormData) {
     name: formData.get('name'),
     email: formData.get('email'),
     password: formData.get('password'),
+    whatsappNumber: formData.get('whatsappNumber'),
   });
 
   if (!validatedFields.success) {
@@ -92,7 +94,7 @@ export async function studentSignup(prevState: any, formData: FormData) {
     };
   }
   
-  const { name, email, password } = validatedFields.data;
+  const { name, email, password, whatsappNumber } = validatedFields.data;
 
   // Check if user already exists
   if (MOCK_USERS.some(u => u.email === email)) {
@@ -109,6 +111,9 @@ export async function studentSignup(prevState: any, formData: FormData) {
     password, // In a real app, hash and salt this!
     avatar: '',
     role: 'student' as const,
+    whatsappNumber,
+    paymentCode: '',
+    paymentCodeSent: false,
   };
 
   MOCK_USERS.push(newUser as any); // Add to in-memory store

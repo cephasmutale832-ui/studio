@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useActionState } from 'react';
@@ -99,6 +100,11 @@ export default function HomePage() {
                           <Label htmlFor="signup-email">Email</Label>
                           <Input id="signup-email" name="email" type="email" placeholder="student@example.com" required />
                           {signupState?.errors?.email && <p className="text-sm font-medium text-destructive">{signupState.errors.email[0]}</p>}
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="whatsapp-number">WhatsApp Number</Label>
+                          <Input id="whatsapp-number" name="whatsappNumber" type="tel" placeholder="+260..." required />
+                          {signupState?.errors?.whatsappNumber && <p className="text-sm font-medium text-destructive">{signupState.errors.whatsappNumber[0]}</p>}
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="signup-password">Password</Label>

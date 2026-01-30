@@ -15,6 +15,9 @@ export const MOCK_USERS: User[] = [
     avatar: avatarImage?.imageUrl ?? '',
     role: 'admin' as const,
     status: 'approved' as const,
+    whatsappNumber: '',
+    paymentCode: '',
+    paymentCodeSent: false,
   },
    {
     id: 'agent-1',
@@ -24,6 +27,9 @@ export const MOCK_USERS: User[] = [
     avatar: '',
     role: 'agent' as const,
     status: 'approved' as const,
+    whatsappNumber: '',
+    paymentCode: '',
+    paymentCodeSent: false,
   },
   {
     id: 'agent-2',
@@ -33,6 +39,9 @@ export const MOCK_USERS: User[] = [
     avatar: '',
     role: 'agent' as const,
     status: 'approved' as const,
+    whatsappNumber: '',
+    paymentCode: '',
+    paymentCodeSent: false,
   },
   {
     id: 'agent-3',
@@ -42,6 +51,9 @@ export const MOCK_USERS: User[] = [
     avatar: '',
     role: 'agent' as const,
     status: 'approved' as const,
+    whatsappNumber: '',
+    paymentCode: '',
+    paymentCodeSent: false,
   },
   {
     id: 'student-1',
@@ -50,5 +62,8 @@ export const MOCK_USERS: User[] = [
     password: 'password123',
     avatar: '',
     role: 'student' as const,
+    whatsappNumber: '260774177403',
+    paymentCode: '',
+    paymentCodeSent: false,
   }
 ];

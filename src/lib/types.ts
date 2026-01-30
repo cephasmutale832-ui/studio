@@ -6,6 +6,9 @@ export interface User {
   avatar: string;
   role: 'admin' | 'agent' | 'student';
   status?: 'pending' | 'approved';
+  whatsappNumber?: string;
+  paymentCode?: string;
+  paymentCodeSent?: boolean;
 }
 
 export interface Session {
