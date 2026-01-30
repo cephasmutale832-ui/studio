@@ -17,7 +17,7 @@ import { MaterialCard } from "./_components/material-card";
 export default async function DashboardPage() {
   const session = await getSession();
   if (!session) {
-    redirect("/login");
+    redirect("/");
   }
 
   const isTrialExpired = session.isTrial && new Date(session.expires) < new Date();

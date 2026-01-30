@@ -141,7 +141,7 @@ export async function login(prevState: any, formData: FormData) {
 
 export async function logout() {
   cookies().set('session', '', { expires: new Date(0) });
-  redirect('/login');
+  redirect('/');
 }
 
 export async function updateSessionPayment() {
@@ -163,5 +163,59 @@ export async function updateSessionPayment() {
         
     } catch (error) {
         console.error('Failed to update session:', error);
+    }
+}
+
+const profileSchema = z.object({
+    name: z.string().min(1, { message: 'Name is required.' }),
+});
+
+const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+
+interface ProfileFormState {
+    success: boolean | null;
+    message?: string;
+    errors?: {
+        name?: string[];
+        picture?: string[];
+    }
+}
+
+export async function updateProfile(prevState: ProfileFormState | null, formData: FormData): Promise<ProfileFormState> {
+    const validatedFields = profileSchema.safeParse({
+        name: formData.get('name'),
+    });
+
+    if (!validatedFields.success) {
+        return {
+            success: false,
+            message: 'Invalid form data.',
+            errors: validatedFields.error.flatten().fieldErrors,
+        };
+    }
+
+    const { name } = validatedFields.data;
+    const picture = formData.get('picture') as File;
+
+    if (picture && picture.size > 0 && !ACCEPTED_IMAGE_TYPES.includes(picture.type)) {
+        return {
+            success: false,
+            message: 'Invalid file type for profile picture.',
+            errors: { picture: ['Only .jpg, .jpeg, .png and .webp formats are supported.'] },
+        }
+    }
+    
+    console.log('--- Updating Profile ---');
+    console.log('Name:', name);
+    if (picture && picture.size > 0) {
+        console.log('Picture Name:', picture.name);
+        console.log('Picture Size:', picture.size);
+        console.log('Picture Type:', picture.type);
+    }
+    console.log('------------------------');
+
+    return {
+        success: true,
+        message: 'Profile updated successfully!',
     }
 }

@@ -15,11 +15,11 @@ export function middleware(request: NextRequest) {
     }
   }
   
-  const isAuthPage = ['/login', '/'].includes(request.nextUrl.pathname);
+  const isAuthPage = request.nextUrl.pathname === '/';
   
-  // If trying to access a protected route without a session, redirect to login
+  // If trying to access a protected route without a session, redirect to home/login page
   if (request.nextUrl.pathname.startsWith('/dashboard') && !session) {
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
   // If on an auth page with a valid session, redirect to dashboard
@@ -31,5 +31,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/login', '/'],
+  matcher: ['/dashboard/:path*', '/'],
 };

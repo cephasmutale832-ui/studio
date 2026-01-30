@@ -12,7 +12,7 @@ export default async function UploadPage() {
     // Although the link is hidden, a user could still navigate here.
     // This server-side check prevents unauthorized access.
     if (!session) {
-        redirect('/login');
+        redirect('/');
     }
 
     const { user } = session;
