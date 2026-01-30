@@ -95,7 +95,8 @@ export async function uploadMaterialAction(
     }
 
     // In a real app, you would handle file storage here (e.g., upload to Firebase Storage)
-    // For now, we are just saving the metadata. The URL remains empty.
+    // For this mock, we'll store the filename in the URL field to simulate access.
+    newMaterial.url = file.name;
     console.log('File Name:', file.name);
     console.log('File Size:', file.size);
     console.log('File Type:', file.type);
@@ -111,10 +112,7 @@ export async function uploadMaterialAction(
 
     revalidatePath('/dashboard'); // This is important to refresh the dashboard data
 
-    let successMessage = `Successfully saved material "${title}"!`;
-    if (materialType === 'document' || materialType === 'past-paper') {
-       successMessage = `Successfully uploaded metadata for "${title}"!`;
-    }
+    const successMessage = `Successfully saved material "${title}"!`;
 
     return { success: true, message: successMessage };
   } catch (error) {

@@ -34,7 +34,8 @@ export function MaterialCard({ material, image }: MaterialCardProps) {
       }
     } else if (material.type === 'document' || material.type === 'past-paper') {
       if (material.url) {
-        window.open(material.url, '_blank');
+        // Since file storage isn't implemented, we'll show an alert for this mock.
+        alert(`In a real application, this would open the document: ${material.url}`);
       } else {
         alert("This document is not yet available.");
       }
