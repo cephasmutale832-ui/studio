@@ -1,3 +1,4 @@
+
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import {
@@ -5,7 +6,6 @@ import {
   User,
   CreditCard,
   Upload,
-  Users
 } from "lucide-react";
 import Link from "next/link";
 
@@ -31,6 +31,9 @@ export default async function DashboardLayout({
   if (!session) {
     redirect("/login");
   }
+
+  const { user } = session;
+  const canUpload = user.role === 'admin' || user.role === 'agent';
 
   return (
     <TooltipProvider>
@@ -70,6 +73,20 @@ export default async function DashboardLayout({
               </TooltipTrigger>
               <TooltipContent side="right">Payment</TooltipContent>
             </Tooltip>
+            {canUpload && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href="/dashboard/upload"
+                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  >
+                    <Upload className="h-5 w-5" />
+                    <span className="sr-only">Upload</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">Upload Materials</TooltipContent>
+              </Tooltip>
+            )}
           </nav>
           <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
             <Tooltip>

@@ -23,7 +23,8 @@ const MOCK_USER = {
   name: 'Alex Doe',
   email: 'student@example.com',
   password: 'password123',
-  avatar: avatarImage?.imageUrl ?? ''
+  avatar: avatarImage?.imageUrl ?? '',
+  role: 'admin' as const,
 };
 
 const MOCK_TRIAL_CODE = 'TRIAL123';
@@ -53,10 +54,11 @@ export async function validateAccessCode(prevState: any, formData: FormData) {
   const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const session = {
     user: {
-      id: MOCK_USER.id,
-      name: MOCK_USER.name,
-      email: MOCK_USER.email,
-      avatar: MOCK_USER.avatar
+      id: 'trial-user',
+      name: 'Trial User',
+      email: 'trial@example.com',
+      avatar: '',
+      role: 'student' as const,
     },
     expires: expires.toISOString(),
     isTrial: true,
@@ -96,7 +98,8 @@ export async function login(prevState: any, formData: FormData) {
       id: MOCK_USER.id,
       name: MOCK_USER.name,
       email: MOCK_USER.email,
-      avatar: MOCK_USER.avatar
+      avatar: MOCK_USER.avatar,
+      role: MOCK_USER.role,
     },
     expires: expires.toISOString(),
     isTrial: false,
