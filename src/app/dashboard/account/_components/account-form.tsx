@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { useEffect, useState } from 'react';
 import type { User } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
@@ -38,7 +39,7 @@ function SubmitButton() {
 
 export function AccountForm({ user }: { user: User }) {
     const { toast } = useToast();
-    const [state, formAction] = useFormState(updateProfile, null);
+    const [state, formAction] = useActionState(updateProfile, null);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
     const getInitials = (name: string) => {

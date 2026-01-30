@@ -1,7 +1,7 @@
-
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { agentSignup, studentSignup, studentLogin, login } from '@/app/actions';
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -57,10 +57,10 @@ function AgentSignupSubmitButton() {
 
 
 export default function HomePage() {
-  const [signupState, signupFormAction] = useFormState(studentSignup, null);
-  const [studentLoginState, studentLoginFormAction] = useFormState(studentLogin, null);
-  const [staffLoginState, staffLoginFormAction] = useFormState(login, null);
-  const [agentSignupState, agentSignupAction] = useFormState(agentSignup, null);
+  const [signupState, signupFormAction] = useActionState(studentSignup, null);
+  const [studentLoginState, studentLoginFormAction] = useActionState(studentLogin, null);
+  const [staffLoginState, staffLoginFormAction] = useActionState(login, null);
+  const [agentSignupState, agentSignupAction] = useActionState(agentSignup, null);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-background">

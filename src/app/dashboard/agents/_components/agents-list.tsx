@@ -1,7 +1,7 @@
-
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { useEffect } from 'react';
 import { type User } from '@/lib/types';
 import { approveAgentAction } from '../actions';
@@ -36,7 +36,7 @@ function ApproveButton() {
 
 function AgentRow({ agent }: { agent: User }) {
     const { toast } = useToast();
-    const [state, formAction] = useFormState(approveAgentAction, null);
+    const [state, formAction] = useActionState(approveAgentAction, null);
 
     useEffect(() => {
         if (state?.message) {

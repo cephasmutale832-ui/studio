@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -37,7 +38,7 @@ function SubmitButton() {
 }
 
 export default function PaymentPage() {
-  const [state, formAction] = useFormState(validatePaymentAction, null);
+  const [state, formAction] = useActionState(validatePaymentAction, null);
   const router = useRouter();
   const { toast } = useToast();
 
