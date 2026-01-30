@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useFormState, useFormStatus } from 'react-dom';
@@ -76,10 +75,17 @@ export default function UploadForm() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
-              <Input id="title" name="title" placeholder="e.g., Introduction to Calculus" required />
-              {state.errors?.title && <p className="text-sm font-medium text-destructive">{state.errors.title[0]}</p>}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                    <Label htmlFor="title">Title</Label>
+                    <Input id="title" name="title" placeholder="e.g., Introduction to Calculus" required />
+                    {state.errors?.title && <p className="text-sm font-medium text-destructive">{state.errors.title[0]}</p>}
+                </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="subject">Subject / Section</Label>
+                    <Input id="subject" name="subject" placeholder="e.g., Mathematics" required />
+                    {state.errors?.subject && <p className="text-sm font-medium text-destructive">{state.errors.subject[0]}</p>}
+                </div>
             </div>
 
             <div className="space-y-2">
@@ -103,6 +109,8 @@ export default function UploadForm() {
                         <SelectContent>
                             <SelectItem value="video">Video</SelectItem>
                             <SelectItem value="document">Document</SelectItem>
+                            <SelectItem value="past-paper">Past Paper</SelectItem>
+                            <SelectItem value="quiz">Quiz</SelectItem>
                         </SelectContent>
                     </Select>
                      {state.errors?.materialType && <p className="text-sm font-medium text-destructive">{state.errors.materialType[0]}</p>}
@@ -115,14 +123,16 @@ export default function UploadForm() {
                     {state.errors?.['gdrive-link'] && <p className="text-sm font-medium text-destructive">{state.errors['gdrive-link'][0]}</p>}
                     <p className="text-xs text-muted-foreground">Paste a shareable Google Drive link.</p>
                   </div>
-                ) : (
+                ) : null}
+
+                {materialType === 'document' || materialType === 'past-paper' ? (
                   <div className="space-y-2">
                       <Label htmlFor="file">File</Label>
                       <Input id="file" name="file" type="file" required accept="application/pdf,.txt,.doc,.docx" />
                       {state.errors?.file && <p className="text-sm font-medium text-destructive">{state.errors.file[0]}</p>}
                       <p className="text-xs text-muted-foreground">Allowed: PDF, DOC, TXT</p>
                   </div>
-                )}
+                ) : null}
             </div>
           </CardContent>
           <CardFooter>
