@@ -9,9 +9,9 @@ const avatarImage = PlaceHolderImages.find(img => img.id === 'avatar-1');
 export const MOCK_USERS: User[] = [
   {
     id: '1',
-    name: 'Cephas Mutale',
-    email: 'cephasmutale832@gmail.com',
-    password: 'Cep12345TY',
+    name: 'Admin User',
+    email: 'admin@example.com',
+    password: 'password',
     avatar: avatarImage?.imageUrl ?? '',
     role: 'admin' as const,
     status: 'approved' as const,
