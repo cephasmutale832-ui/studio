@@ -18,9 +18,6 @@ const fontSpaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: 'AccessGate Pro',
   description: 'Secure access to your educational materials.',
-  icons: {
-    icon: "/icon.svg",
-  },
 };
 
 export default function RootLayout({
