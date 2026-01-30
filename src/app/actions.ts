@@ -18,14 +18,41 @@ const loginSchema = z.object({
 const avatarImage = PlaceHolderImages.find(img => img.id === 'avatar-1');
 
 // Mock user data
-const MOCK_USER = {
-  id: '1',
-  name: 'Alex Doe',
-  email: 'student@example.com',
-  password: 'password123',
-  avatar: avatarImage?.imageUrl ?? '',
-  role: 'admin' as const,
-};
+const MOCK_USERS = [
+  {
+    id: '1',
+    name: 'Cephas Mutale',
+    email: 'cephasmutale832@gmail.com',
+    password: 'password123',
+    avatar: avatarImage?.imageUrl ?? '',
+    role: 'admin' as const,
+  },
+   {
+    id: 'agent-1',
+    name: 'Trusted Agent 1',
+    email: 'agent1@example.com',
+    password: 'password123',
+    avatar: '',
+    role: 'agent' as const,
+  },
+  {
+    id: 'agent-2',
+    name: 'Trusted Agent 2',
+    email: 'agent2@example.com',
+    password: 'password123',
+    avatar: '',
+    role: 'agent' as const,
+  },
+  {
+    id: 'agent-3',
+    name: 'Trusted Agent 3',
+    email: 'agent3@example.com',
+    password: 'password123',
+    avatar: '',
+    role: 'agent' as const,
+  }
+];
+
 
 const MOCK_TRIAL_CODE = 'TRIAL123';
 
@@ -84,7 +111,9 @@ export async function login(prevState: any, formData: FormData) {
 
   const { email, password } = validatedFields.data;
 
-  if (email !== MOCK_USER.email || password !== MOCK_USER.password) {
+  const user = MOCK_USERS.find(u => u.email === email && u.password === password);
+
+  if (!user) {
     return {
       errors: { email: ['Invalid email or password.'] },
       message: 'Invalid credentials.',
@@ -95,11 +124,11 @@ export async function login(prevState: any, formData: FormData) {
   const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
   const session = {
      user: {
-      id: MOCK_USER.id,
-      name: MOCK_USER.name,
-      email: MOCK_USER.email,
-      avatar: MOCK_USER.avatar,
-      role: MOCK_USER.role,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+      role: user.role,
     },
     expires: expires.toISOString(),
     isTrial: false,
