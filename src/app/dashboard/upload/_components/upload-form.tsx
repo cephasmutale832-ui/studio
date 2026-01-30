@@ -126,21 +126,12 @@ export default function UploadForm({ subjects }: { subjects: string[] }) {
                      {state.errors?.materialType && <p className="text-sm font-medium text-destructive">{state.errors.materialType[0]}</p>}
                 </div>
                 
-                {materialType === 'video' ? (
+                {materialType === 'video' || materialType === 'document' || materialType === 'past-paper' ? (
                   <div className="space-y-2">
-                    <Label htmlFor="gdrive-link">Google Drive Link</Label>
-                    <Input id="gdrive-link" name="gdrive-link" type="url" placeholder="https://drive.google.com/file/d/..." required />
-                    {state.errors?.['gdrive-link'] && <p className="text-sm font-medium text-destructive">{state.errors['gdrive-link'][0]}</p>}
-                    <p className="text-xs text-muted-foreground">Paste a shareable Google Drive link.</p>
-                  </div>
-                ) : null}
-
-                {materialType === 'document' || materialType === 'past-paper' ? (
-                  <div className="space-y-2">
-                      <Label htmlFor="file">File</Label>
-                      <Input id="file" name="file" type="file" required />
-                      {state.errors?.file && <p className="text-sm font-medium text-destructive">{state.errors.file[0]}</p>}
-                      <p className="text-xs text-muted-foreground">Upload any file from your device.</p>
+                    <Label htmlFor="url">Content URL</Label>
+                    <Input id="url" name="url" type="url" placeholder="https://..." required />
+                    {state.errors?.url && <p className="text-sm font-medium text-destructive">{state.errors.url[0]}</p>}
+                    <p className="text-xs text-muted-foreground">Paste a link to the video, document, or past paper.</p>
                   </div>
                 ) : null}
             </div>

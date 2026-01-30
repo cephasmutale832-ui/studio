@@ -20,21 +20,21 @@ export function MaterialCard({ material, image }: MaterialCardProps) {
   const [isPlayerOpen, setPlayerOpen] = useState(false);
 
   const handleActionClick = () => {
-    if (material.type === 'video') {
-      if (material.url) {
-        setPlayerOpen(true);
-      } else {
-        alert("This video is not yet available.");
-      }
-    } else if (material.type === 'document' || material.type === 'past-paper') {
-      if (material.url) {
-        // Since file storage isn't implemented, we'll show an alert for this mock.
-        alert(`In a real application, this would open the document: ${material.url}`);
-      } else {
-        alert("This document is not yet available.");
-      }
-    } else if (material.type === 'quiz') {
+    if (material.type === 'quiz') {
       alert("This quiz is not yet available.");
+      return;
+    }
+
+    if (!material.url) {
+      alert(`This ${material.type} is not yet available.`);
+      return;
+    }
+
+    // Use built-in player for Google Drive videos, otherwise open in new tab.
+    if (material.type === 'video' && material.url.includes('drive.google.com')) {
+      setPlayerOpen(true);
+    } else {
+      window.open(material.url, '_blank');
     }
   };
 

@@ -22,8 +22,7 @@ interface FormState {
         description?: string[];
         subject?: string[];
         materialType?: string[];
-        file?: string[];
-        'gdrive-link'?: string[];
+        url?: string[];
     }
 }
 
@@ -81,28 +80,20 @@ export async function uploadMaterialAction(
     url: '',
   };
 
-  if (materialType === 'video') {
-    const gdriveLink = formData.get('gdrive-link') as string;
-    if (!gdriveLink || !gdriveLink.startsWith('https://drive.google.com/')) {
-        return { success: false, message: 'Invalid Google Drive link.', errors: { 'gdrive-link': ['Please provide a valid Google Drive share link.'] } };
+  if (materialType === 'video' || materialType === 'document' || materialType === 'past-paper') {
+    const url = formData.get('url') as string;
+    const urlSchema = z.string().url({ message: 'Please provide a valid URL.' }).min(1, 'A URL is required for this material type.');
+    const validatedUrlResult = urlSchema.safeParse(url);
+    if (!validatedUrlResult.success) {
+        return { 
+            success: false, 
+            message: 'Invalid URL provided.', 
+            errors: { url: validatedUrlResult.error.flatten().formErrors } 
+        };
     }
-    newMaterial.url = gdriveLink;
-
-  } else if (materialType === 'document' || materialType === 'past-paper') {
-    const file = formData.get('file') as File;
-    if (!file || file.size === 0) {
-        return { success: false, message: 'A file is required for this material type.', errors: { file: ['Please select a file to upload.'] } };
-    }
-
-    // In a real app, you would handle file storage here (e.g., upload to Firebase Storage)
-    // For this mock, we'll store the filename in the URL field to simulate access.
-    newMaterial.url = file.name;
-    console.log('File Name:', file.name);
-    console.log('File Size:', file.size);
-    console.log('File Type:', file.type);
-    
+    newMaterial.url = validatedUrlResult.data;
   } else if (materialType === 'quiz') {
-      // No file or link needed for a quiz in this implementation
+      // No URL needed for a quiz in this implementation
   }
   
   try {
