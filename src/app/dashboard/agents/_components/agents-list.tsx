@@ -1,8 +1,7 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
-import { useEffect } from 'react';
 import { type User } from '@/lib/types';
 import { approveAgentAction } from '../actions';
 import { useToast } from '@/hooks/use-toast';

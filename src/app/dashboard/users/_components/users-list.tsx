@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useActionState, useEffect } from 'react-dom';
+import { useActionState, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
 import { type User } from '@/lib/types';
 import { approveAgentAction, deleteUserAction } from '../actions';
@@ -64,20 +64,28 @@ function UserRow({ user }: { user: User }) {
     const [deleteState, deleteFormAction] = useActionState(deleteUserAction, null);
     const [isAlertOpen, setIsAlertOpen] = React.useState(false);
 
-    const state = approveState || deleteState;
+    useEffect(() => {
+        if (approveState?.message) {
+            toast({
+                title: approveState.success ? 'Success' : 'Error',
+                description: approveState.message,
+                variant: approveState.success ? 'default' : 'destructive',
+            });
+        }
+    }, [approveState, toast]);
 
     useEffect(() => {
-        if (state?.message) {
+        if (deleteState?.message) {
             toast({
-                title: state.success ? 'Success' : 'Error',
-                description: state.message,
-                variant: state.success ? 'default' : 'destructive',
+                title: deleteState.success ? 'Success' : 'Error',
+                description: deleteState.message,
+                variant: deleteState.success ? 'default' : 'destructive',
             });
-            if (state.success) {
+            if (deleteState.success) {
                 setIsAlertOpen(false);
             }
         }
-    }, [state, toast]);
+    }, [deleteState, toast]);
     
     const getStatus = (user: User) => {
         if (user.role === 'agent') {

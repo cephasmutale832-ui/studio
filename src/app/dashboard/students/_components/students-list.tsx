@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -28,6 +27,20 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
+function DeleteButton() {
+  const { pending } = useFormStatus();
+  return (
+      <Button variant="destructive" type="submit" disabled={pending}>
+          {pending ? (
+            <>
+              <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+              Deleting...
+            </>
+          ) : 'Delete'}
+      </Button>
+  );
+}
+
 function StudentRow({ student }: { student: User }) {
     const { toast } = useToast();
     const [state, formAction] = useActionState(deleteStudentAction, null);
@@ -48,20 +61,6 @@ function StudentRow({ student }: { student: User }) {
             });
         }
     }, [state, toast]);
-
-    function DeleteButton() {
-      const { pending } = useFormStatus();
-      return (
-          <Button variant="destructive" type="submit" disabled={pending}>
-              {pending ? (
-                <>
-                  <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                  Deleting...
-                </>
-              ) : 'Delete'}
-          </Button>
-      );
-    }
 
     return (
          <TableRow key={student.id}>
