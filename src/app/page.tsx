@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useFormState, useFormStatus } from 'react-dom';
@@ -81,7 +82,7 @@ export default function HomePage() {
                         {loginState?.errors?.password && <p className="text-sm font-medium text-destructive">{loginState.errors.password[0]}</p>}
                         </div>
                         <LoginSubmitButton />
-                        <p className="text-xs text-muted-foreground text-center pt-2">Hint: Use <code className="font-mono p-1 bg-muted rounded">cephasmutale832@gmail.com</code> and <code className="font-mono p-1 bg-muted rounded">password123</code> for admin.</p>
+                        <p className="text-xs text-muted-foreground text-center pt-2">Hint: Use <code className="font-mono p-1 bg-muted rounded">cephasmutale832@gmail.com</code> and <code className="font-mono p-1 bg-muted rounded">Cep12345TY</code> for admin.</p>
                     </form>
                 </TabsContent>
             </Tabs>

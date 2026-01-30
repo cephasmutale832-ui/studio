@@ -23,7 +23,7 @@ const MOCK_USERS = [
     id: '1',
     name: 'Cephas Mutale',
     email: 'cephasmutale832@gmail.com',
-    password: 'password123',
+    password: 'Cep12345TY',
     avatar: avatarImage?.imageUrl ?? '',
     role: 'admin' as const,
   },
