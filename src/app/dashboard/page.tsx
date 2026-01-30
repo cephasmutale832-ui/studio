@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { cn } from "@/lib/utils";
 import { AlertTriangle, FileText, Video } from "lucide-react";
 
 export default async function DashboardPage() {
