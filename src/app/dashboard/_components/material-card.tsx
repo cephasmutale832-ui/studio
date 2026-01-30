@@ -5,14 +5,8 @@ import { useState } from 'react';
 import Image from 'next/image';
 import {
   Card,
-  CardContent,
-  CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { FileText, Video, ClipboardCheck } from "lucide-react";
 import { type ImagePlaceholder } from '@/lib/placeholder-images';
 import { VideoPlayer } from './video-player';
 import { type Material } from '@/lib/types';
@@ -44,38 +38,12 @@ export function MaterialCard({ material, image }: MaterialCardProps) {
     }
   };
 
-  const getIcon = () => {
-    switch (material.type) {
-      case 'video':
-        return <Video className="mr-1 h-3 w-3" />;
-      case 'document':
-      case 'past-paper':
-        return <FileText className="mr-1 h-3 w-3" />;
-      case 'quiz':
-        return <ClipboardCheck className="mr-1 h-3 w-3" />;
-      default:
-        return null;
-    }
-  };
-
-  const getButtonText = () => {
-    switch (material.type) {
-      case 'video':
-        return 'Watch Now';
-      case 'document':
-        return 'Read Document';
-      case 'past-paper':
-        return 'View Paper';
-      case 'quiz':
-        return 'Start Quiz';
-      default:
-        return 'View';
-    }
-  };
-
   return (
     <>
-      <Card className="overflow-hidden transition-transform hover:scale-105 hover:shadow-lg">
+      <Card 
+        onClick={handleActionClick}
+        className="overflow-hidden transition-transform hover:scale-105 hover:shadow-lg cursor-pointer"
+      >
         <CardHeader className="p-0">
           <div className="relative aspect-video">
             {image && (
@@ -88,20 +56,8 @@ export function MaterialCard({ material, image }: MaterialCardProps) {
               />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-            <Badge variant="secondary" className="absolute top-3 right-3">
-              {getIcon()}
-              {material.type === 'past-paper' ? 'Past Paper' : material.type.charAt(0).toUpperCase() + material.type.slice(1)}
-            </Badge>
           </div>
         </CardHeader>
-        <CardContent className="p-4">
-          <CardTitle className="text-lg font-headline">{material.title}</CardTitle>
-        </CardContent>
-        <CardFooter className="p-4 pt-0">
-            <Button className="w-full border-accent text-accent" variant="outline" onClick={handleActionClick}>
-            {getButtonText()}
-          </Button>
-        </CardFooter>
       </Card>
 
       {material.type === 'video' && material.url && (
