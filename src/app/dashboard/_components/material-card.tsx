@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -24,24 +25,41 @@ interface MaterialCardProps {
   material: Material;
   image?: ImagePlaceholder;
   userRole?: User['role'];
-  isLocked?: boolean;
+  isLocked?: boolean; // This is the trial lock
+  previousMaterialId?: string; // For sequential locking
+  isRegistered: boolean; // To apply sequential lock only for registered users
 }
 
-export function MaterialCard({ material, image, userRole, isLocked }: MaterialCardProps) {
+export function MaterialCard({ material, image, userRole, isLocked, previousMaterialId, isRegistered }: MaterialCardProps) {
   const [isPlayerOpen, setPlayerOpen] = useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const { progress, updateProgress } = useMaterialProgress(material.id);
+  const { progress: prevProgress } = useMaterialProgress(previousMaterialId || '');
   const { toast } = useToast();
   const router = useRouter();
 
+  // A video is sequentially locked if the user is registered, it's a video,
+  // it has a preceding video, and that video is not 100% complete.
+  const isSequentiallyLocked = isRegistered && material.type === 'video' && !!previousMaterialId && prevProgress < 100;
+
+  const finalIsLocked = isLocked || isSequentiallyLocked;
+
   const handleActionClick = () => {
-    if (isLocked) {
-      toast({
-        title: 'Content Locked',
-        description: 'Please validate your payment to access all learning materials.',
-        variant: 'destructive',
-        action: <ToastAction altText="Validate Payment" onClick={() => router.push('/dashboard/payment')}>Validate Payment</ToastAction>
-      });
+    if (finalIsLocked) {
+      if (isSequentiallyLocked) {
+        toast({
+          title: 'Content Locked',
+          description: 'Please complete the previous video to unlock this one.',
+          variant: 'destructive',
+        });
+      } else { // This must be the trial lock
+        toast({
+          title: 'Content Locked',
+          description: 'Please validate your payment to access all learning materials.',
+          variant: 'destructive',
+          action: <ToastAction altText="Validate Payment" onClick={() => router.push('/dashboard/payment')}>Validate Payment</ToastAction>
+        });
+      }
       return;
     }
 
@@ -92,7 +110,7 @@ export function MaterialCard({ material, image, userRole, isLocked }: MaterialCa
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             
-            {isLocked ? (
+            {finalIsLocked ? (
               <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white z-10">
                   <Lock className="h-10 w-10" />
                   <p className="font-semibold mt-2 text-sm">Locked</p>
@@ -119,7 +137,7 @@ export function MaterialCard({ material, image, userRole, isLocked }: MaterialCa
         </CardHeader>
       </Card>
 
-      {!isLocked && material.type === 'video' && material.url && (
+      {!finalIsLocked && material.type === 'video' && material.url && (
         <VideoPlayer
           isOpen={isPlayerOpen}
           onClose={() => setPlayerOpen(false)}

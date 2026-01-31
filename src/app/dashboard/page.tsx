@@ -126,7 +126,7 @@ export default async function DashboardPage() {
                             {subjectMaterials.map((material) => {
                                 const image = getImage(material.imageId);
                                 return (
-                                <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />
+                                <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isRegistered={isRegistered} />
                                 )
                             })}
                         </div>
@@ -173,7 +173,8 @@ export default async function DashboardPage() {
                                                             {generalPhysicsMaterials.map((material, index) => {
                                                                 const image = getImage(material.imageId);
                                                                 const isLocked = !isRegistered && index >= 3;
-                                                                return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} />;
+                                                                const previousMaterialId = index > 0 ? generalPhysicsMaterials[index - 1].id : undefined;
+                                                                return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} previousMaterialId={previousMaterialId} isRegistered={isRegistered} />;
                                                             })}
                                                         </div>
                                                     )}
@@ -197,7 +198,8 @@ export default async function DashboardPage() {
                                                                                 {topicMaterials.map((material, index) => {
                                                                                     const image = getImage(material.imageId);
                                                                                     const isLocked = !isRegistered && index >= 3;
-                                                                                    return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} />;
+                                                                                    const previousMaterialId = index > 0 ? topicMaterials[index - 1].id : undefined;
+                                                                                    return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} previousMaterialId={previousMaterialId} isRegistered={isRegistered} />;
                                                                                 })}
                                                                             </div>
                                                                         </AccordionContent>
@@ -222,8 +224,9 @@ export default async function DashboardPage() {
                                                     {chemistryMaterials.map((material, index) => {
                                                         const image = getImage(material.imageId);
                                                         const isLocked = !isRegistered && index >= 3;
+                                                        const previousMaterialId = index > 0 ? chemistryMaterials[index - 1].id : undefined;
                                                         return (
-                                                        <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} />
+                                                        <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} previousMaterialId={previousMaterialId} isRegistered={isRegistered} />
                                                         )
                                                     })}
                                                 </div>
@@ -269,7 +272,8 @@ export default async function DashboardPage() {
                                                             {generalBiologyMaterials.map((material, index) => {
                                                                 const image = getImage(material.imageId);
                                                                 const isLocked = !isRegistered && index >= 3;
-                                                                return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} />;
+                                                                const previousMaterialId = index > 0 ? generalBiologyMaterials[index - 1].id : undefined;
+                                                                return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} previousMaterialId={previousMaterialId} isRegistered={isRegistered} />;
                                                             })}
                                                         </div>
                                                     </div>
@@ -293,7 +297,8 @@ export default async function DashboardPage() {
                                                                             {topicMaterials.map((material, index) => {
                                                                                 const image = getImage(material.imageId);
                                                                                 const isLocked = !isRegistered && index >= 3;
-                                                                                return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} />;
+                                                                                const previousMaterialId = index > 0 ? topicMaterials[index - 1].id : undefined;
+                                                                                return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} previousMaterialId={previousMaterialId} isRegistered={isRegistered} />;
                                                                             })}
                                                                         </div>
                                                                     </AccordionContent>
@@ -331,8 +336,9 @@ export default async function DashboardPage() {
                                 {subjectMaterials.map((material, index) => {
                                     const image = getImage(material.imageId);
                                     const isLocked = !isRegistered && index >= 3;
+                                    const previousMaterialId = index > 0 ? subjectMaterials[index - 1].id : undefined;
                                     return (
-                                    <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} />
+                                    <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} previousMaterialId={previousMaterialId} isRegistered={isRegistered} />
                                     )
                                 })}
                                 </div>
@@ -363,7 +369,7 @@ export default async function DashboardPage() {
                                 {subjectMaterials.map((material) => {
                                     const image = getImage(material.imageId);
                                     return (
-                                    <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />
+                                    <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isRegistered={isRegistered}/>
                                     )
                                 })}
                                 </div>
@@ -394,7 +400,7 @@ export default async function DashboardPage() {
                                 {subjectMaterials.map((material) => {
                                     const image = getImage(material.imageId);
                                     return (
-                                    <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />
+                                    <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isRegistered={isRegistered}/>
                                     )
                                 })}
                                 </div>
