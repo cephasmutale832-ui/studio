@@ -52,7 +52,16 @@ export function VideoPlayer({ isOpen, onClose, material }: VideoPlayerProps) {
           clearInterval(progressInterval);
           return 100;
         }
-        return prev + progressIncrement;
+
+        const newProgress = prev + progressIncrement;
+
+        // If progress reaches 80% or more, mark as complete (100%).
+        if (newProgress >= 80) {
+          clearInterval(progressInterval);
+          return 100;
+        }
+
+        return newProgress;
       });
     }, UPDATE_INTERVAL_IN_MS);
 
@@ -60,11 +69,6 @@ export function VideoPlayer({ isOpen, onClose, material }: VideoPlayerProps) {
   }, [isOpen, progress, updateProgress]);
 
   const handleClose = () => {
-    // When the user closes the video, mark it as complete.
-    // This fulfills the "or selected finish" requirement for sequential video locking.
-    if (progress < 100) {
-      updateProgress(100);
-    }
     onClose();
   };
 
