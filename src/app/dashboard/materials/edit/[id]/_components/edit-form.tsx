@@ -63,6 +63,12 @@ export function EditMaterialForm({ subjects, material }: { subjects: string[], m
     // Success is handled by redirect
   }, [state, toast, router]);
 
+  const getSubjectLabel = (subject: string) => {
+    if (subject === 'SCIENCE P1') return 'PHYSICS (SCIENCE P1)';
+    if (subject === 'SCIENCE P2') return 'CHEMISTRY (SCIENCE P2)';
+    return subject;
+  }
+
   return (
       <Card>
         <form action={formAction} ref={formRef}>
@@ -88,7 +94,7 @@ export function EditMaterialForm({ subjects, material }: { subjects: string[], m
                         </SelectTrigger>
                         <SelectContent>
                             {subjects.map(subject => (
-                                <SelectItem key={subject} value={subject}>{subject}</SelectItem>
+                                <SelectItem key={subject} value={subject}>{getSubjectLabel(subject)}</SelectItem>
                             ))}
                         </SelectContent>
                     </Select>
