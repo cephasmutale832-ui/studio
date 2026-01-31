@@ -139,7 +139,6 @@ export default function HomePage() {
                            {studentLoginState?.errors?.password && <p className="text-sm font-medium text-destructive">{studentLoginState.errors.password[0]}</p>}
                         </div>
                         <StudentLoginSubmitButton />
-                         <p className="text-xs text-muted-foreground text-center pt-2">Hint: Use <code className="font-mono p-1 bg-muted rounded">student@example.com</code> and <code className="font-mono p-1 bg-muted rounded">password123</code> for existing student.</p>
                       </form>
                     </TabsContent>
                   </Tabs>
@@ -190,7 +189,6 @@ export default function HomePage() {
                                         {staffLoginState?.errors?.password && <p className="text-sm font-medium text-destructive">{staffLoginState.errors.password[0]}</p>}
                                         </div>
                                         <StaffLoginSubmitButton />
-                                        <p className="text-xs text-muted-foreground text-center pt-2">Hint: Use <code className="font-mono p-1 bg-muted rounded">agent1@example.com</code> and <code className="font-mono p-1 bg-muted rounded">password123</code> for an approved agent.</p>
                                     </form>
                                 </TabsContent>
                                 <TabsContent value="signup" className="pt-4">
