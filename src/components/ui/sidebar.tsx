@@ -291,29 +291,33 @@ const SidebarRail = React.forwardRef<
   React.ComponentProps<"button">
 >(({ className, ...props }, ref) => {
   const { toggleSidebar, setOpen } = useSidebar();
-  const railRef = React.useRef<HTMLButtonElement>(null);
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleDragStart = React.useCallback((e: React.MouseEvent<HTMLButtonElement> | React.TouchEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const startX = e.clientX;
-    const sidebarWrapper = e.currentTarget.closest('.group\\/sidebar-wrapper');
-    if (!sidebarWrapper) return;
+    const startX = 'touches' in e ? e.touches[0].clientX : e.clientX;
     
-    const sidebar = e.currentTarget.closest('[data-side]');
-    const side = sidebar?.getAttribute('data-side') || 'left';
+    const sidebarContainer = (e.currentTarget as HTMLElement).parentElement;
+    const sidebarWrapper = sidebarContainer?.closest('.group\\/sidebar-wrapper');
     
-    const initialWidth = sidebar?.clientWidth || 0;
+    if (!sidebarContainer || !sidebarWrapper) return;
 
-    const handleMouseMove = (moveEvent: MouseEvent) => {
+    const side = sidebarContainer.parentElement?.getAttribute('data-side') || 'left';
+    const initialWidth = sidebarContainer.clientWidth;
+
+    const handleDragMove = (moveEvent: MouseEvent | TouchEvent) => {
+      if (moveEvent.cancelable) {
+        moveEvent.preventDefault();
+      }
       document.body.style.cursor = side === 'left' ? 'ew-resize' : 'we-resize';
+      const currentX = 'touches' in moveEvent ? moveEvent.touches[0].clientX : moveEvent.clientX;
+
       let newWidth;
       if (side === 'left') {
-        newWidth = initialWidth + (moveEvent.clientX - startX);
+        newWidth = initialWidth + (currentX - startX);
       } else {
-        newWidth = initialWidth - (moveEvent.clientX - startX);
+        newWidth = initialWidth - (currentX - startX);
       }
 
-      // Clamp the width
       const minWidth = 12 * 16; // 12rem
       const maxWidth = 30 * 16; // 30rem
       if (newWidth < minWidth) newWidth = minWidth;
@@ -322,41 +326,48 @@ const SidebarRail = React.forwardRef<
       (sidebarWrapper as HTMLElement).style.setProperty('--sidebar-width', `${newWidth}px`);
     };
 
-    const handleMouseUp = (upEvent: MouseEvent) => {
+    const handleDragEnd = (upEvent: MouseEvent | TouchEvent) => {
       document.body.style.cursor = '';
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mousemove', handleDragMove);
+      document.removeEventListener('mouseup', handleDragEnd);
+      document.removeEventListener('touchmove', handleDragMove);
+      document.removeEventListener('touchend', handleDragEnd);
       
-      const movedDistance = Math.abs(upEvent.clientX - startX);
+      const endX = 'changedTouches' in upEvent ? upEvent.changedTouches[0].clientX : upEvent.clientX;
+      const movedDistance = Math.abs(endX - startX);
 
       if (movedDistance < 5) {
         toggleSidebar();
       } else {
-        const currentWidth = (sidebarWrapper as HTMLElement).style.getPropertyValue('--sidebar-width');
-        const numericWidth = parseInt(currentWidth, 10);
-        if (numericWidth < 14 * 16) { // if less than 14rem, snap to collapsed
-          setOpen(false);
-           (sidebarWrapper as HTMLElement).style.removeProperty('--sidebar-width');
-        } else {
-          setOpen(true);
+        const currentWidthStyle = (sidebarWrapper as HTMLElement).style.getPropertyValue('--sidebar-width');
+        if (currentWidthStyle) {
+            const numericWidth = parseInt(currentWidthStyle, 10);
+            if (numericWidth < 14 * 16) { // if less than 14rem, snap to collapsed
+              setOpen(false);
+               (sidebarWrapper as HTMLElement).style.removeProperty('--sidebar-width');
+            } else {
+              setOpen(true);
+            }
         }
       }
     };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  };
-
+    
+    document.addEventListener('mousemove', handleDragMove);
+    document.addEventListener('mouseup', handleDragEnd);
+    document.addEventListener('touchmove', handleDragMove, { passive: false });
+    document.addEventListener('touchend', handleDragEnd);
+  }, [setOpen, toggleSidebar]);
 
   return (
     <button
       ref={ref}
-      onMouseDown={handleMouseDown}
+      onMouseDown={handleDragStart}
+      onTouchStart={handleDragStart}
       data-sidebar="rail"
       aria-label="Toggle or resize sidebar"
       title="Toggle or resize sidebar"
       className={cn(
-        "absolute inset-y-0 z-20 hidden w-2 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[1px] group-hover:after:bg-border/80 group-data-[side=left]:-right-1 group-data-[side=right]:-left-1 sm:flex",
+        "absolute inset-y-0 z-20 hidden w-4 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[1px] group-hover:after:bg-border/80 group-data-[side=left]:-right-2 group-data-[side=right]:-left-2 sm:flex",
         "[[data-side=left]_&]:cursor-ew-resize [[data-side=right]_&]:cursor-we-resize",
         "group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full group-data-[collapsible=offcanvas]:hover:bg-sidebar",
         "[[data-side=left][data-collapsible=offcanvas]_&]:-right-2",
