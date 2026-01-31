@@ -38,11 +38,14 @@ export function MaterialCard({ material, image, userRole, isLocked, previousMate
   const { toast } = useToast();
   const router = useRouter();
 
+  // Admins and agents should not have any locks
+  const isPrivilegedUser = userRole === 'admin' || userRole === 'agent';
+
   // A video is sequentially locked if the user is a registered student, it's a video,
   // it has a preceding video, and that video is not 100% complete.
   const isSequentiallyLocked = isRegistered && userRole === 'student' && material.type === 'video' && !!previousMaterialId && prevProgress < 100;
 
-  const finalIsLocked = isLocked || isSequentiallyLocked;
+  const finalIsLocked = !isPrivilegedUser && (isLocked || isSequentiallyLocked);
 
   const handleActionClick = () => {
     if (finalIsLocked) {
@@ -142,6 +145,7 @@ export function MaterialCard({ material, image, userRole, isLocked, previousMate
           isOpen={isPlayerOpen}
           onClose={() => setPlayerOpen(false)}
           title={material.title}
+          description={material.description}
           gdriveLink={material.url}
           updateProgress={updateProgress}
         />
