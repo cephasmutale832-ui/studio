@@ -122,11 +122,14 @@ export default async function DashboardPage() {
                         </div>
                       </AccordionTrigger>
                       <AccordionContent>
-                        <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid gap-x-6 gap-y-8 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
                             {subjectMaterials.map((material) => {
                                 const image = getImage(material.imageId);
                                 return (
-                                <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isRegistered={isRegistered} />
+                                <div key={material.id}>
+                                  <MaterialCard material={material} image={image} userRole={user.role} isRegistered={isRegistered} />
+                                  <h3 className="mt-2 font-semibold text-sm leading-tight truncate">{material.title}</h3>
+                                </div>
                                 )
                             })}
                         </div>
@@ -169,12 +172,17 @@ export default async function DashboardPage() {
                                             {physicsMaterials.length > 0 ? (
                                                 <div className="pl-4">
                                                     {generalPhysicsMaterials.length > 0 && (
-                                                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
+                                                        <div className="grid gap-x-6 gap-y-8 md:grid-cols-2 lg:grid-cols-3 mb-6">
                                                             {generalPhysicsMaterials.map((material, index) => {
                                                                 const image = getImage(material.imageId);
                                                                 const isLocked = !isRegistered && index >= 3;
                                                                 const previousMaterialId = index > 0 ? generalPhysicsMaterials[index - 1].id : undefined;
-                                                                return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} previousMaterialId={previousMaterialId} isRegistered={isRegistered} />;
+                                                                return (
+                                                                  <div key={material.id}>
+                                                                    <MaterialCard material={material} image={image} userRole={user.role} isLocked={isLocked} previousMaterialId={previousMaterialId} isRegistered={isRegistered} />
+                                                                    <h3 className="mt-2 font-semibold text-sm leading-tight truncate">{material.title}</h3>
+                                                                  </div>
+                                                                );
                                                             })}
                                                         </div>
                                                     )}
@@ -194,12 +202,17 @@ export default async function DashboardPage() {
                                                                             </div>
                                                                         </AccordionTrigger>
                                                                         <AccordionContent>
-                                                                            <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
+                                                                            <div className="grid gap-x-6 gap-y-8 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
                                                                                 {topicMaterials.map((material, index) => {
                                                                                     const image = getImage(material.imageId);
                                                                                     const isLocked = !isRegistered && index >= 3;
                                                                                     const previousMaterialId = index > 0 ? topicMaterials[index - 1].id : undefined;
-                                                                                    return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} previousMaterialId={previousMaterialId} isRegistered={isRegistered} />;
+                                                                                    return (
+                                                                                      <div key={material.id}>
+                                                                                        <MaterialCard material={material} image={image} userRole={user.role} isLocked={isLocked} previousMaterialId={previousMaterialId} isRegistered={isRegistered} />
+                                                                                        <h3 className="mt-2 font-semibold text-sm leading-tight truncate">{material.title}</h3>
+                                                                                      </div>
+                                                                                    );
                                                                                 })}
                                                                             </div>
                                                                         </AccordionContent>
@@ -220,13 +233,16 @@ export default async function DashboardPage() {
                                                 CHEMISTRY (SCIENCE P2)
                                             </h3>
                                             {chemistryMaterials.length > 0 ? (
-                                                <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
+                                                <div className="grid gap-x-6 gap-y-8 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
                                                     {chemistryMaterials.map((material, index) => {
                                                         const image = getImage(material.imageId);
                                                         const isLocked = !isRegistered && index >= 3;
                                                         const previousMaterialId = index > 0 ? chemistryMaterials[index - 1].id : undefined;
                                                         return (
-                                                        <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} previousMaterialId={previousMaterialId} isRegistered={isRegistered} />
+                                                          <div key={material.id}>
+                                                            <MaterialCard material={material} image={image} userRole={user.role} isLocked={isLocked} previousMaterialId={previousMaterialId} isRegistered={isRegistered} />
+                                                            <h3 className="mt-2 font-semibold text-sm leading-tight truncate">{material.title}</h3>
+                                                          </div>
                                                         )
                                                     })}
                                                 </div>
@@ -268,12 +284,17 @@ export default async function DashboardPage() {
                                                             <Folder className="h-5 w-5" />
                                                             General Biology
                                                         </h3>
-                                                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                                        <div className="grid gap-x-6 gap-y-8 md:grid-cols-2 lg:grid-cols-3">
                                                             {generalBiologyMaterials.map((material, index) => {
                                                                 const image = getImage(material.imageId);
                                                                 const isLocked = !isRegistered && index >= 3;
                                                                 const previousMaterialId = index > 0 ? generalBiologyMaterials[index - 1].id : undefined;
-                                                                return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} previousMaterialId={previousMaterialId} isRegistered={isRegistered} />;
+                                                                return (
+                                                                  <div key={material.id}>
+                                                                    <MaterialCard material={material} image={image} userRole={user.role} isLocked={isLocked} previousMaterialId={previousMaterialId} isRegistered={isRegistered} />
+                                                                    <h3 className="mt-2 font-semibold text-sm leading-tight truncate">{material.title}</h3>
+                                                                  </div>
+                                                                );
                                                             })}
                                                         </div>
                                                     </div>
@@ -293,12 +314,17 @@ export default async function DashboardPage() {
                                                                         </div>
                                                                     </AccordionTrigger>
                                                                     <AccordionContent>
-                                                                        <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
+                                                                        <div className="grid gap-x-6 gap-y-8 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
                                                                             {topicMaterials.map((material, index) => {
                                                                                 const image = getImage(material.imageId);
                                                                                 const isLocked = !isRegistered && index >= 3;
                                                                                 const previousMaterialId = index > 0 ? topicMaterials[index - 1].id : undefined;
-                                                                                return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} previousMaterialId={previousMaterialId} isRegistered={isRegistered} />;
+                                                                                return (
+                                                                                  <div key={material.id}>
+                                                                                    <MaterialCard material={material} image={image} userRole={user.role} isLocked={isLocked} previousMaterialId={previousMaterialId} isRegistered={isRegistered} />
+                                                                                    <h3 className="mt-2 font-semibold text-sm leading-tight truncate">{material.title}</h3>
+                                                                                  </div>
+                                                                                );
                                                                             })}
                                                                         </div>
                                                                     </AccordionContent>
@@ -332,13 +358,16 @@ export default async function DashboardPage() {
                                 </div>
                             </AccordionTrigger>
                             <AccordionContent>
-                                <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
+                                <div className="grid gap-x-6 gap-y-8 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
                                 {subjectMaterials.map((material, index) => {
                                     const image = getImage(material.imageId);
                                     const isLocked = !isRegistered && index >= 3;
                                     const previousMaterialId = index > 0 ? subjectMaterials[index - 1].id : undefined;
                                     return (
-                                    <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} previousMaterialId={previousMaterialId} isRegistered={isRegistered} />
+                                      <div key={material.id}>
+                                        <MaterialCard material={material} image={image} userRole={user.role} isLocked={isLocked} previousMaterialId={previousMaterialId} isRegistered={isRegistered} />
+                                        <h3 className="mt-2 font-semibold text-sm leading-tight truncate">{material.title}</h3>
+                                      </div>
                                     )
                                 })}
                                 </div>
@@ -365,11 +394,14 @@ export default async function DashboardPage() {
                                 </div>
                             </AccordionTrigger>
                             <AccordionContent>
-                                <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
+                                <div className="grid gap-x-6 gap-y-8 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
                                 {subjectMaterials.map((material) => {
                                     const image = getImage(material.imageId);
                                     return (
-                                    <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isRegistered={isRegistered}/>
+                                      <div key={material.id}>
+                                        <MaterialCard material={material} image={image} userRole={user.role} isRegistered={isRegistered}/>
+                                        <h3 className="mt-2 font-semibold text-sm leading-tight truncate">{material.title}</h3>
+                                      </div>
                                     )
                                 })}
                                 </div>
@@ -396,11 +428,14 @@ export default async function DashboardPage() {
                                 </div>
                             </AccordionTrigger>
                             <AccordionContent>
-                                <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
+                                <div className="grid gap-x-6 gap-y-8 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
                                 {subjectMaterials.map((material) => {
                                     const image = getImage(material.imageId);
                                     return (
-                                    <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isRegistered={isRegistered}/>
+                                      <div key={material.id}>
+                                        <MaterialCard material={material} image={image} userRole={user.role} isRegistered={isRegistered}/>
+                                        <h3 className="mt-2 font-semibold text-sm leading-tight truncate">{material.title}</h3>
+                                      </div>
                                     )
                                 })}
                                 </div>
