@@ -75,6 +75,7 @@ interface UpdateFormState {
         subject?: string[];
         materialType?: string[];
         url?: string[];
+        topic?: string[];
     }
 }
 

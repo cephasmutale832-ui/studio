@@ -48,7 +48,7 @@ function SubmitButton() {
 }
 
 export function EditMaterialForm({ subjects, material }: { subjects: string[], material: Material }) {
-  const [state, formAction] = useActionState(updateMaterialAction, { success: null, message: '' });
+  const [state, formAction] = useActionState(updateMaterialAction, { success: null, message: '', errors: {} });
   const { toast } = useToast();
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
@@ -119,6 +119,7 @@ export function EditMaterialForm({ subjects, material }: { subjects: string[], m
                           ))}
                       </SelectContent>
                   </Select>
+                  {state.errors?.topic && <p className="text-sm font-medium text-destructive">{state.errors.topic[0]}</p>}
               </div>
             )}
 

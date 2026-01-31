@@ -24,6 +24,7 @@ interface FormState {
         subject?: string[];
         materialType?: string[];
         url?: string[];
+        topic?: string[];
     }
 }
 

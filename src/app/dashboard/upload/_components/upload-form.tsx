@@ -47,7 +47,7 @@ function SubmitButton() {
 }
 
 export default function UploadForm({ subjects }: { subjects: string[] }) {
-  const [state, formAction] = useActionState(uploadMaterialAction, { success: null, message: '' });
+  const [state, formAction] = useActionState(uploadMaterialAction, { success: null, message: '', errors: {} });
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
   const [materialType, setMaterialType] = useState<Material['type']>('video');
@@ -123,6 +123,7 @@ export default function UploadForm({ subjects }: { subjects: string[] }) {
                           ))}
                       </SelectContent>
                   </Select>
+                  {state.errors?.topic && <p className="text-sm font-medium text-destructive">{state.errors.topic[0]}</p>}
               </div>
             )}
 
