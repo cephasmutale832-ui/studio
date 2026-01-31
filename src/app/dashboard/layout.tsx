@@ -74,18 +74,20 @@ export default async function DashboardLayout({
               </TooltipTrigger>
               <TooltipContent side="right">Dashboard</TooltipContent>
             </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="/dashboard/payment"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                >
-                  <CreditCard className="h-5 w-5" />
-                  <span className="sr-only">Payment</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Payment</TooltipContent>
-            </Tooltip>
+            {isStudent && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href="/dashboard/payment"
+                    className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                  >
+                    <CreditCard className="h-5 w-5" />
+                    <span className="sr-only">Payment</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">Payment</TooltipContent>
+              </Tooltip>
+            )}
             {canUpload && (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -163,13 +165,15 @@ export default async function DashboardLayout({
                     <Home className="h-5 w-5" />
                     Dashboard
                   </Link>
-                  <Link
-                    href="/dashboard/payment"
-                    className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-                  >
-                    <CreditCard className="h-5 w-5" />
-                    Payment
-                  </Link>
+                  {isStudent && (
+                    <Link
+                      href="/dashboard/payment"
+                      className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                    >
+                      <CreditCard className="h-5 w-5" />
+                      Payment
+                    </Link>
+                  )}
                   {canUpload && (
                      <Link
                         href="/dashboard/upload"
