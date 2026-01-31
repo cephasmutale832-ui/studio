@@ -74,28 +74,7 @@ export async function uploadMaterialAction(
 
   const { materialType, title, description, subject, topic } = validatedFields.data;
   
-  let referenceTextContent: string | undefined = undefined;
-  if (materialType === 'video') {
-    const referenceFile = formData.get('referenceText') as File;
-    if (referenceFile && referenceFile.size > 0) {
-      if (referenceFile.type !== 'text/plain') {
-          return { 
-              success: false, 
-              message: 'Invalid reference file type. Only .txt files are allowed.', 
-              errors: { referenceText: ['Only .txt files are allowed.'] }
-          };
-      }
-      try {
-        referenceTextContent = await referenceFile.text();
-      } catch (error) {
-        return { 
-          success: false, 
-          message: 'Could not read the reference file.', 
-          errors: { referenceText: ['Error reading file.'] }
-        };
-      }
-    }
-  }
+  const referenceTextContent = formData.get('referenceText') as string || undefined;
 
   const newMaterial: Material = {
     id: `material-${Date.now()}`,
@@ -106,7 +85,7 @@ export async function uploadMaterialAction(
     type: materialType,
     imageId: '', // No longer assign a random placeholder image
     url: '',
-    referenceText: referenceTextContent,
+    referenceText: materialType === 'video' ? referenceTextContent : undefined,
   };
 
   if (materialType === 'video' || materialType === 'document' || materialType === 'past-paper') {

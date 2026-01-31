@@ -120,25 +120,7 @@ export async function updateMaterialAction(
   };
   
   if (materialType === 'video') {
-    const referenceFile = formData.get('referenceText') as File;
-    if (referenceFile && referenceFile.size > 0) {
-      if (referenceFile.type !== 'text/plain') {
-        return { 
-          success: false, 
-          message: 'Invalid reference file type. Only .txt files are allowed.', 
-          errors: { referenceText: ['Only .txt files are allowed.'] }
-        };
-      }
-      try {
-        updatedMaterial.referenceText = await referenceFile.text();
-      } catch (error) {
-        return { 
-          success: false, 
-          message: 'Could not read the reference file.', 
-          errors: { referenceText: ['Error reading file.'] }
-        };
-      }
-    }
+    updatedMaterial.referenceText = formData.get('referenceText') as string || '';
   } else {
     // Clear reference text if material type is not video
     updatedMaterial.referenceText = undefined;
@@ -172,3 +154,4 @@ export async function updateMaterialAction(
   revalidatePath(`/dashboard/materials/edit/${id}`);
   redirect('/dashboard');
 }
+

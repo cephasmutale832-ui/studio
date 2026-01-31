@@ -182,13 +182,16 @@ export function EditMaterialForm({ subjects, material }: { subjects: string[], m
             {materialType === 'video' && (
               <div className="space-y-2">
                 <Label htmlFor="referenceText">Quiz Reference Text (Optional)</Label>
-                <Input id="referenceText" name="referenceText" type="file" accept=".txt" />
+                <Textarea
+                  id="referenceText"
+                  name="referenceText"
+                  placeholder="Paste or type the reference text for the quiz here."
+                  className="min-h-[150px]"
+                  defaultValue={material.referenceText}
+                />
                 {state.errors?.referenceText && <p className="text-sm font-medium text-destructive">{state.errors.referenceText[0]}</p>}
                 <p className="text-xs text-muted-foreground">
-                  {material.referenceText 
-                    ? "A reference text is already associated. Upload a new .txt file to replace it." 
-                    : "Upload a .txt file to be used as a reference for generating a more accurate quiz."
-                  }
+                  Provide text to be used as a reference for generating a more accurate quiz.
                 </p>
               </div>
             )}
