@@ -26,7 +26,7 @@ import { Button } from "@/components/ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { type ImagePlaceholder } from "@/lib/placeholder-images";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, Folder } from "lucide-react";
+import { AlertTriangle, Folder, FileText, Video, File, HelpCircle } from "lucide-react";
 import { MaterialCard } from "./_components/material-card";
 import { subjects } from "@/lib/subjects";
 import { type Material } from "@/lib/types";
@@ -99,11 +99,23 @@ export default async function DashboardPage() {
 
       <div className={cn(isTrialExpired && "opacity-50 pointer-events-none")}>
         <Tabs defaultValue="past-papers" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="past-papers">Past Papers</TabsTrigger>
-            <TabsTrigger value="videos">Videos</TabsTrigger>
-            <TabsTrigger value="documents">Documents</TabsTrigger>
-            <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-4 bg-transparent p-0 h-auto">
+            <TabsTrigger value="past-papers" className="h-28 flex-col gap-2 p-4 rounded-lg bg-card text-muted-foreground font-semibold shadow-sm hover:shadow-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <FileText className="h-8 w-8" />
+              Past Papers
+            </TabsTrigger>
+            <TabsTrigger value="videos" className="h-28 flex-col gap-2 p-4 rounded-lg bg-card text-muted-foreground font-semibold shadow-sm hover:shadow-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Video className="h-8 w-8" />
+              Videos
+            </TabsTrigger>
+            <TabsTrigger value="documents" className="h-28 flex-col gap-2 p-4 rounded-lg bg-card text-muted-foreground font-semibold shadow-sm hover:shadow-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <File className="h-8 w-8" />
+              Documents
+            </TabsTrigger>
+            <TabsTrigger value="quizzes" className="h-28 flex-col gap-2 p-4 rounded-lg bg-card text-muted-foreground font-semibold shadow-sm hover:shadow-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <HelpCircle className="h-8 w-8" />
+              Quizzes
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="past-papers" className="mt-6">
