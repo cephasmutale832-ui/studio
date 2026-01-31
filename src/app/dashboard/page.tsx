@@ -53,6 +53,9 @@ export default async function DashboardPage() {
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 2020 + 1 }, (_, i) => 2020 + i).reverse();
 
+  // Create a consolidated list for the grouped tabs
+  const consolidatedSubjects = [...new Set(subjects.map(s => s.split(' P')[0]))];
+
   const getImage = (id: string): ImagePlaceholder | undefined => {
     return PlaceHolderImages.find(img => img.id === id);
   }
@@ -62,7 +65,7 @@ export default async function DashboardPage() {
   };
 
   const getPastPapersBySubject = (subject: string) => {
-    return allMaterials.filter(m => m.type === 'past-paper' && m.subject.startsWith(subject));
+    return allMaterials.filter(m => m.type === 'past-paper' && m.subject === subject);
   }
 
   return (
@@ -100,6 +103,9 @@ export default async function DashboardPage() {
              <Accordion type="single" collapsible className="w-full">
                 {subjects.map(subject => {
                   const subjectMaterials = getPastPapersBySubject(subject);
+                  if (subjectMaterials.length === 0) {
+                    return null;
+                  }
                   return (
                     <AccordionItem value={subject} key={subject}>
                       <AccordionTrigger className="text-lg font-semibold">
@@ -109,27 +115,14 @@ export default async function DashboardPage() {
                         </div>
                       </AccordionTrigger>
                       <AccordionContent>
-                        {subjectMaterials.length > 0 ? (
-                          <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
                             {subjectMaterials.map((material) => {
                                 const image = getImage(material.imageId);
                                 return (
                                 <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />
                                 )
                             })}
-                          </div>
-                        ) : (
-                          <>
-                            <p className="p-4 text-muted-foreground">Past papers for {subject} will be available here, sorted by year.</p>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pt-4 pl-6">
-                              {years.map(year => (
-                                <Button key={year} variant="outline" className="justify-start" disabled>
-                                  {year}
-                                </Button>
-                              ))}
-                            </div>
-                          </>
-                        )}
+                        </div>
                       </AccordionContent>
                     </AccordionItem>
                   )
@@ -139,7 +132,7 @@ export default async function DashboardPage() {
 
           <TabsContent value="videos" className="mt-6">
             <Accordion type="single" collapsible className="w-full">
-                {subjects.map(subject => {
+                {consolidatedSubjects.map(subject => {
                     const subjectMaterials = getMaterialsByTypeAndSubject('video', subject);
                     return (
                         <AccordionItem value={subject} key={subject}>
@@ -171,7 +164,7 @@ export default async function DashboardPage() {
 
           <TabsContent value="documents" className="mt-6">
              <Accordion type="single" collapsible className="w-full">
-                {subjects.map(subject => {
+                {consolidatedSubjects.map(subject => {
                     const subjectMaterials = getMaterialsByTypeAndSubject('document', subject);
                     return (
                         <AccordionItem value={subject} key={subject}>
@@ -203,7 +196,7 @@ export default async function DashboardPage() {
 
           <TabsContent value="quizzes" className="mt-6">
              <Accordion type="single" collapsible className="w-full">
-                {subjects.map(subject => {
+                {consolidatedSubjects.map(subject => {
                     const subjectMaterials = getMaterialsByTypeAndSubject('quiz', subject);
                     return (
                         <AccordionItem value={subject} key={subject}>
