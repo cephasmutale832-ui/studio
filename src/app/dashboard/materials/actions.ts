@@ -119,10 +119,10 @@ export async function updateMaterialAction(
     topic: topic === 'general' ? '' : topic || '',
   };
   
-  if (materialType === 'video') {
+  if (materialType === 'video' || materialType === 'document') {
     updatedMaterial.referenceText = formData.get('referenceText') as string || '';
   } else {
-    // Clear reference text if material type is not video
+    // Clear reference text if material type is not video or document
     updatedMaterial.referenceText = undefined;
   }
 
@@ -154,4 +154,3 @@ export async function updateMaterialAction(
   revalidatePath(`/dashboard/materials/edit/${id}`);
   redirect('/dashboard');
 }
-

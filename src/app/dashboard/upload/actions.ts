@@ -85,7 +85,7 @@ export async function uploadMaterialAction(
     type: materialType,
     imageId: '', // No longer assign a random placeholder image
     url: '',
-    referenceText: materialType === 'video' ? referenceTextContent : undefined,
+    referenceText: (materialType === 'video' || materialType === 'document') ? referenceTextContent : undefined,
   };
 
   if (materialType === 'video' || materialType === 'document' || materialType === 'past-paper') {

@@ -18,6 +18,8 @@ export const GenerateQuizInputSchema = z.object({
     .string()
     .optional()
     .describe('Optional reference text for generating the quiz.'),
+  subject: z.string().optional(),
+  topic: z.string().optional(),
 });
 export type GenerateQuizInput = z.infer<typeof GenerateQuizInputSchema>;
 

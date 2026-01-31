@@ -34,7 +34,7 @@ export function VideoPlayer({ isOpen, onClose, material }: VideoPlayerProps) {
   const [isQuizTriggered, setIsQuizTriggered] = useState(false);
   const { toast } = useToast();
 
-  const { title, description, url, referenceText } = material;
+  const { title, description, url, referenceText, subject, topic } = material;
 
   const getFileId = (url: string): string | null => {
     if (!url) return null;
@@ -53,7 +53,7 @@ export function VideoPlayer({ isOpen, onClose, material }: VideoPlayerProps) {
       setIsQuizTriggered(false);
       setQuiz(null); // Reset previous quiz
 
-      generateQuiz({ title, description: description || '', referenceText })
+      generateQuiz({ title, description: description || '', referenceText, subject, topic })
         .then((generatedQuiz) => {
           if (generatedQuiz && generatedQuiz.questions.length > 0) {
             setQuiz(generatedQuiz);
@@ -74,7 +74,7 @@ export function VideoPlayer({ isOpen, onClose, material }: VideoPlayerProps) {
           setIsQuizLoading(false);
         });
     }
-  }, [isOpen, title, description, referenceText, toast]);
+  }, [isOpen, title, description, referenceText, subject, topic, toast]);
 
   // Effect for video progress simulation
   useEffect(() => {
@@ -119,7 +119,9 @@ export function VideoPlayer({ isOpen, onClose, material }: VideoPlayerProps) {
   const handleQuizClose = () => {
       setIsQuizOpen(false);
       // Mark video as complete after quiz
-      updateProgress(100);
+      if (progress < 100) {
+        updateProgress(100);
+      }
   }
 
   return (

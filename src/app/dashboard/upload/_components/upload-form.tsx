@@ -182,17 +182,19 @@ export default function UploadForm({ subjects }: { subjects: string[] }) {
                   </div>
                 ) : null}
             </div>
-             {materialType === 'video' && (
+             {(materialType === 'video' || materialType === 'document') && (
               <div className="space-y-2">
-                <Label htmlFor="referenceText">Quiz Reference Text (Optional)</Label>
+                <Label htmlFor="referenceText">Reference Text (Optional)</Label>
                 <Textarea
                   id="referenceText"
                   name="referenceText"
-                  placeholder="Paste or type the reference text for the quiz here."
+                  placeholder="For videos, this text is used for quiz generation. For documents, this can be the document's content."
                   className="min-h-[150px]"
                 />
                 {state.errors?.referenceText && <p className="text-sm font-medium text-destructive">{state.errors.referenceText[0]}</p>}
-                <p className="text-xs text-muted-foreground">Provide text to be used as a reference for generating a more accurate quiz.</p>
+                <p className="text-xs text-muted-foreground">
+                  For videos, this text helps generate a more accurate quiz. For documents, you can paste the full content here to be used as reference for video quizzes on the same topic.
+                </p>
               </div>
             )}
           </CardContent>
