@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Card,
   CardHeader,
@@ -13,22 +14,37 @@ import { type Material, type User } from '@/lib/types';
 import { useMaterialProgress } from '@/hooks/use-material-progress';
 import { ProgressCircle } from './progress-circle';
 import { Button } from '@/components/ui/button';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, Lock } from 'lucide-react';
 import { DeleteMaterialDialog } from './delete-material-dialog';
+import { useToast } from '@/hooks/use-toast';
+import { ToastAction } from '@/components/ui/toast';
 
 
 interface MaterialCardProps {
   material: Material;
   image?: ImagePlaceholder;
   userRole?: User['role'];
+  isLocked?: boolean;
 }
 
-export function MaterialCard({ material, image, userRole }: MaterialCardProps) {
+export function MaterialCard({ material, image, userRole, isLocked }: MaterialCardProps) {
   const [isPlayerOpen, setPlayerOpen] = useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const { progress, updateProgress } = useMaterialProgress(material.id);
+  const { toast } = useToast();
+  const router = useRouter();
 
   const handleActionClick = () => {
+    if (isLocked) {
+      toast({
+        title: 'Content Locked',
+        description: 'Please validate your payment to access all learning materials.',
+        variant: 'destructive',
+        action: <ToastAction altText="Validate Payment" onClick={() => router.push('/dashboard/payment')}>Validate Payment</ToastAction>
+      });
+      return;
+    }
+
     // For quizzes, alert and mark as complete.
     if (material.type === 'quiz') {
       alert("This quiz is not yet available.");
@@ -61,10 +77,10 @@ export function MaterialCard({ material, image, userRole }: MaterialCardProps) {
   return (
     <>
       <Card 
-        className="overflow-hidden transition-transform hover:scale-105 hover:shadow-lg cursor-pointer group"
+        className="overflow-hidden transition-transform hover:scale-105 hover:shadow-lg group"
       >
         <CardHeader className="p-0">
-          <div className="relative aspect-video" onClick={handleActionClick}>
+          <div className="relative aspect-video cursor-pointer" onClick={handleActionClick}>
             {image && (
                 <Image
                 src={image.imageUrl}
@@ -75,9 +91,18 @@ export function MaterialCard({ material, image, userRole }: MaterialCardProps) {
               />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-            <div className="absolute top-2 right-2 z-10">
-              <ProgressCircle progress={progress} />
-            </div>
+            
+            {isLocked ? (
+              <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white z-10">
+                  <Lock className="h-10 w-10" />
+                  <p className="font-semibold mt-2 text-sm">Locked</p>
+              </div>
+            ) : (
+              <div className="absolute top-2 right-2 z-10">
+                <ProgressCircle progress={progress} />
+              </div>
+            )}
+            
              {userRole === 'admin' && (
                 <div className="absolute top-2 left-2 z-20 flex gap-2">
                     <Button asChild size="icon" variant="secondary" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
@@ -94,7 +119,7 @@ export function MaterialCard({ material, image, userRole }: MaterialCardProps) {
         </CardHeader>
       </Card>
 
-      {material.type === 'video' && material.url && (
+      {!isLocked && material.type === 'video' && material.url && (
         <VideoPlayer
           isOpen={isPlayerOpen}
           onClose={() => setPlayerOpen(false)}

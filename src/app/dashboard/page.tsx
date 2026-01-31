@@ -41,6 +41,7 @@ export default async function DashboardPage() {
 
   const { user } = session;
   const isTrialExpired = session.isTrial && new Date(session.expires) < new Date();
+  const isRegistered = user.role === 'admin' || user.role === 'agent' || user.status === 'registered';
   
   const materialsFilePath = path.join(process.cwd(), 'src', 'lib', 'materials.json');
   let allMaterials: Material[] = [];
@@ -169,9 +170,10 @@ export default async function DashboardPage() {
                                                 <div className="pl-4">
                                                     {generalPhysicsMaterials.length > 0 && (
                                                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
-                                                            {generalPhysicsMaterials.map(material => {
+                                                            {generalPhysicsMaterials.map((material, index) => {
                                                                 const image = getImage(material.imageId);
-                                                                return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />;
+                                                                const isLocked = !isRegistered && index >= 3;
+                                                                return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} />;
                                                             })}
                                                         </div>
                                                     )}
@@ -192,9 +194,10 @@ export default async function DashboardPage() {
                                                                         </AccordionTrigger>
                                                                         <AccordionContent>
                                                                             <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
-                                                                                {topicMaterials.map(material => {
+                                                                                {topicMaterials.map((material, index) => {
                                                                                     const image = getImage(material.imageId);
-                                                                                    return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />;
+                                                                                    const isLocked = !isRegistered && index >= 3;
+                                                                                    return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} />;
                                                                                 })}
                                                                             </div>
                                                                         </AccordionContent>
@@ -216,10 +219,11 @@ export default async function DashboardPage() {
                                             </h3>
                                             {chemistryMaterials.length > 0 ? (
                                                 <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
-                                                    {chemistryMaterials.map((material) => {
+                                                    {chemistryMaterials.map((material, index) => {
                                                         const image = getImage(material.imageId);
+                                                        const isLocked = !isRegistered && index >= 3;
                                                         return (
-                                                        <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />
+                                                        <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} />
                                                         )
                                                     })}
                                                 </div>
@@ -262,9 +266,10 @@ export default async function DashboardPage() {
                                                             General Biology
                                                         </h3>
                                                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                                                            {generalBiologyMaterials.map(material => {
+                                                            {generalBiologyMaterials.map((material, index) => {
                                                                 const image = getImage(material.imageId);
-                                                                return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />;
+                                                                const isLocked = !isRegistered && index >= 3;
+                                                                return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} />;
                                                             })}
                                                         </div>
                                                     </div>
@@ -285,9 +290,10 @@ export default async function DashboardPage() {
                                                                     </AccordionTrigger>
                                                                     <AccordionContent>
                                                                         <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
-                                                                            {topicMaterials.map(material => {
+                                                                            {topicMaterials.map((material, index) => {
                                                                                 const image = getImage(material.imageId);
-                                                                                return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />;
+                                                                                const isLocked = !isRegistered && index >= 3;
+                                                                                return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} />;
                                                                             })}
                                                                         </div>
                                                                     </AccordionContent>
@@ -322,10 +328,11 @@ export default async function DashboardPage() {
                             </AccordionTrigger>
                             <AccordionContent>
                                 <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
-                                {subjectMaterials.map((material) => {
+                                {subjectMaterials.map((material, index) => {
                                     const image = getImage(material.imageId);
+                                    const isLocked = !isRegistered && index >= 3;
                                     return (
-                                    <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />
+                                    <MaterialCard key={material.id} material={material} image={image} userRole={user.role} isLocked={isLocked} />
                                     )
                                 })}
                                 </div>
