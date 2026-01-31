@@ -9,23 +9,27 @@ interface ActionState {
     message?: string;
 }
 
-export async function approveAgentAction(prevState: ActionState | null, formData: FormData): Promise<ActionState> {
-    const agentId = formData.get('userId') as string;
+export async function approveUserAction(prevState: ActionState | null, formData: FormData): Promise<ActionState> {
+    const userId = formData.get('userId') as string;
     
-    if (!agentId) {
-        return { success: false, message: 'Agent ID is missing.' };
+    if (!userId) {
+        return { success: false, message: 'User ID is missing.' };
     }
 
-    const agentIndex = MOCK_USERS.findIndex(u => u.id === agentId);
+    const userIndex = MOCK_USERS.findIndex(u => u.id === userId);
 
-    if (agentIndex > -1 && MOCK_USERS[agentIndex].role === 'agent') {
-        (MOCK_USERS[agentIndex] as any).status = 'approved';
+    if (userIndex > -1) {
+        const user = MOCK_USERS[userIndex];
+        if (user.status === 'approved') {
+            return { success: false, message: 'User is already approved.' };
+        }
+        (MOCK_USERS[userIndex] as any).status = 'approved';
         
         revalidatePath('/dashboard/users');
-        return { success: true, message: `${MOCK_USERS[agentIndex].name} has been approved.` };
+        return { success: true, message: `${user.name} has been approved.` };
     }
     
-    return { success: false, message: 'Agent not found.' };
+    return { success: false, message: 'User not found.' };
 }
 
 export async function deleteUserAction(prevState: ActionState | null, formData: FormData): Promise<ActionState> {

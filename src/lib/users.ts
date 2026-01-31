@@ -62,6 +62,7 @@ export const MOCK_USERS: User[] = [
     password: 'password123',
     avatar: '',
     role: 'student' as const,
+    status: 'approved' as const,
     whatsappNumber: '260774177403',
     paymentCode: '',
     paymentCodeSent: false,

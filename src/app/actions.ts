@@ -89,6 +89,7 @@ export async function studentSignup(prevState: any, formData: FormData) {
 
   if (!validatedFields.success) {
     return {
+      success: false,
       errors: validatedFields.error.flatten().fieldErrors,
       message: 'Invalid data.',
     };
@@ -99,6 +100,7 @@ export async function studentSignup(prevState: any, formData: FormData) {
   // Check if user already exists
   if (MOCK_USERS.some(u => u.email === email)) {
     return {
+      success: false,
       errors: { email: ['An account with this email already exists.'] },
       message: 'User already exists.',
     };
@@ -111,24 +113,18 @@ export async function studentSignup(prevState: any, formData: FormData) {
     password, // In a real app, hash and salt this!
     avatar: '',
     role: 'student' as const,
+    status: 'pending' as const,
     whatsappNumber,
     paymentCode: '',
     paymentCodeSent: false,
   };
 
   MOCK_USERS.push(newUser as any); // Add to in-memory store
-
-  // Set auth cookie for 7 days for the trial period
-  const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-  const session = {
-    user: newUser,
-    expires: expires.toISOString(),
-    isTrial: true, // This is a new user, so they get a trial
-  };
-
-  cookies().set('session', JSON.stringify(session), { expires, httpOnly: true });
   
-  redirect('/dashboard');
+  return {
+      success: true,
+      message: "Registration successful! Your account is now pending approval from an administrator."
+  }
 }
 
 // Agent Signup Action
@@ -201,9 +197,18 @@ export async function studentLogin(prevState: any, formData: FormData) {
     };
   }
 
+  if (user.status !== 'approved') {
+    return {
+      errors: { email: ['This student account has not been approved.'] },
+      message: 'Account not approved.',
+    };
+  }
+
   // Set auth cookie for 30 days.
   // We assume an existing student logging in is no longer on a trial.
-  const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  // For new approved users, start a 7-day trial.
+  const isNewUser = !user.paymentCodeSent; // Heuristic to check if it's a first real login
+  const expires = new Date(Date.now() + (isNewUser ? 7 : 30) * 24 * 60 * 60 * 1000);
   const session = {
      user: {
       id: user.id,
@@ -211,9 +216,10 @@ export async function studentLogin(prevState: any, formData: FormData) {
       email: user.email,
       avatar: user.avatar,
       role: user.role,
+      status: user.status,
     },
     expires: expires.toISOString(),
-    isTrial: false, // Existing student, trial is over.
+    isTrial: isNewUser,
   };
 
   cookies().set('session', JSON.stringify(session), { expires, httpOnly: true });

@@ -24,7 +24,7 @@ function SignUpSubmitButton() {
   const { pending } = useFormStatus();
   return (
     <Button className="w-full" type="submit" aria-disabled={pending} disabled={pending}>
-      {pending ? 'Signing Up...' : 'Sign Up for 7-Day Trial'}
+      {pending ? 'Signing Up...' : 'Sign Up'}
     </Button>
   );
 }
@@ -89,7 +89,7 @@ export default function HomePage() {
                     <TabsContent value="signup" className="pt-4">
                       <form action={signupFormAction} className="space-y-4">
                         <CardDescription className="text-center">
-                            Sign up to start your 7-day free trial.
+                            Sign up to get your account approved by an admin.
                         </CardDescription>
                          <div className="space-y-2">
                           <Label htmlFor="name">Full Name</Label>
@@ -112,6 +112,15 @@ export default function HomePage() {
                            {signupState?.errors?.password && <p className="text-sm font-medium text-destructive">{signupState.errors.password[0]}</p>}
                         </div>
                         <SignUpSubmitButton />
+                         {signupState?.success && (
+                            <Alert>
+                                <CheckCircle className="h-4 w-4" />
+                                <AlertTitle>Success!</AlertTitle>
+                                <AlertDescription>
+                                    {signupState.message}
+                                </AlertDescription>
+                            </Alert>
+                        )}
                       </form>
                     </TabsContent>
                     <TabsContent value="signin" className="pt-4">

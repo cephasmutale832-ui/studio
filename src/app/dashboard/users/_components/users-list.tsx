@@ -5,7 +5,7 @@ import * as React from 'react';
 import { useActionState, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
 import { type User } from '@/lib/types';
-import { approveAgentAction, deleteUserAction, sendPaymentCodeAction } from '../actions';
+import { approveUserAction, deleteUserAction, sendPaymentCodeAction } from '../actions';
 import { useToast } from '@/hooks/use-toast';
 import { LoaderCircle, Trash2 } from 'lucide-react';
 import {
@@ -71,7 +71,7 @@ function SendCodeButton() {
 
 function UserRow({ user }: { user: User }) {
     const { toast } = useToast();
-    const [approveState, approveFormAction] = useActionState(approveAgentAction, null);
+    const [approveState, approveFormAction] = useActionState(approveUserAction, null);
     const [deleteState, deleteFormAction] = useActionState(deleteUserAction, null);
     const [sendCodeState, sendCodeFormAction] = useActionState(sendPaymentCodeAction, null);
     const [isAlertOpen, setIsAlertOpen] = React.useState(false);
@@ -120,14 +120,19 @@ function UserRow({ user }: { user: User }) {
     }, [sendCodeState, toast]);
     
     const getStatus = (user: User) => {
-        if (user.role === 'agent') {
-            return <Badge variant={user.status === 'approved' ? 'default' : 'secondary'}>{user.status}</Badge>
-        }
-        if (user.role === 'student') {
-             return <Badge variant="outline">Active</Badge>
-        }
         if (user.role === 'admin') {
-             return <Badge>Admin</Badge>
+            return <Badge>Admin</Badge>;
+        }
+        if (user.status) {
+            return (
+                <Badge variant={user.status === 'approved' ? 'default' : 'secondary'} className="capitalize">
+                    {user.status}
+                </Badge>
+            );
+        }
+        // Fallback for older data that might not have a status
+        if (user.role === 'student') {
+            return <Badge variant="outline">Active</Badge>;
         }
         return null;
     }
@@ -146,14 +151,14 @@ function UserRow({ user }: { user: User }) {
             </TableCell>
             <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-2">
-                    {user.role === 'agent' && user.status === 'pending' && (
+                    {(user.role === 'agent' || user.role === 'student') && user.status === 'pending' && (
                         <form action={approveFormAction}>
                             <input type="hidden" name="userId" value={user.id} />
                             <ApproveButton />
                         </form>
                     )}
                     
-                    {user.role === 'student' && user.paymentCodeSent === false && (
+                    {user.role === 'student' && user.status === 'approved' && user.paymentCodeSent === false && (
                         <form action={sendCodeFormAction}>
                             <input type="hidden" name="userId" value={user.id} />
                             <SendCodeButton />
