@@ -29,6 +29,7 @@ import {
 import { type Material } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 import { physicsTopics } from '@/lib/topics';
+import { biologyTopics } from '@/lib/biology-topics';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -114,6 +115,24 @@ export function EditMaterialForm({ subjects, material }: { subjects: string[], m
                       <SelectContent>
                            <SelectItem value="general">General Physics</SelectItem>
                           {physicsTopics.map(topic => (
+                              <SelectItem key={topic} value={topic}>{topic}</SelectItem>
+                          ))}
+                      </SelectContent>
+                  </Select>
+                  {state.errors?.topic && <p className="text-sm font-medium text-destructive">{state.errors.topic[0]}</p>}
+              </div>
+            )}
+
+            {(subject === 'BIOLOGY P1' || subject === 'BIOLOGY P2') && materialType === 'video' && (
+              <div className="space-y-2">
+                  <Label htmlFor="topic">Biology Topic</Label>
+                  <Select name="topic" defaultValue={material.topic || 'general'}>
+                      <SelectTrigger id="topic">
+                          <SelectValue placeholder="Select a topic for the Biology video (optional)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                           <SelectItem value="general">General Biology</SelectItem>
+                          {biologyTopics.map(topic => (
                               <SelectItem key={topic} value={topic}>{topic}</SelectItem>
                           ))}
                       </SelectContent>

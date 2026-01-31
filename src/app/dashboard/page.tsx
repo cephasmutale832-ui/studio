@@ -31,6 +31,7 @@ import { MaterialCard } from "./_components/material-card";
 import { subjects } from "@/lib/subjects";
 import { type Material } from "@/lib/types";
 import { physicsTopics } from "@/lib/topics";
+import { biologyTopics } from "@/lib/biology-topics";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -146,8 +147,8 @@ export default async function DashboardPage() {
                             return null;
                         }
 
-                        const generalPhysicsMaterials = physicsMaterials.filter(m => !m.topic || m.topic === '');
-                        const topicPhysicsMaterialsExist = physicsMaterials.some(m => m.topic && m.topic !== '');
+                        const generalPhysicsMaterials = physicsMaterials.filter(m => !m.topic || m.topic === 'general' || m.topic === '');
+                        const topicPhysicsMaterialsExist = physicsMaterials.some(m => m.topic && m.topic !== 'general' && m.topic !== '');
 
                         return (
                             <AccordionItem value="SCIENCE" key="SCIENCE">
@@ -214,7 +215,7 @@ export default async function DashboardPage() {
                                                 CHEMISTRY (SCIENCE P2)
                                             </h3>
                                             {chemistryMaterials.length > 0 ? (
-                                                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                                <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
                                                     {chemistryMaterials.map((material) => {
                                                         const image = getImage(material.imageId);
                                                         return (
@@ -223,14 +224,88 @@ export default async function DashboardPage() {
                                                     })}
                                                 </div>
                                             ) : (
-                                                <p className="text-sm text-muted-foreground">No Chemistry videos available for this section yet.</p>
+                                                <p className="text-sm text-muted-foreground pt-4 pl-6">No Chemistry videos available for this section yet.</p>
                                             )}
                                         </div>
                                     </div>
                                 </AccordionContent>
                             </AccordionItem>
                         );
+                    } else if (subject === 'BIOLOGY') {
+                        const biologyP1Materials = getMaterialsByExactSubject('video', 'BIOLOGY P1');
+                        const biologyP2Materials = getMaterialsByExactSubject('video', 'BIOLOGY P2');
+                        const allBiologyMaterials = [...biologyP1Materials, ...biologyP2Materials];
+
+                        if (allBiologyMaterials.length === 0) {
+                            return null;
+                        }
+
+                        const generalBiologyMaterials = allBiologyMaterials.filter(m => !m.topic || m.topic === 'general' || m.topic === '');
+                        const topicBiologyMaterialsExist = allBiologyMaterials.some(m => m.topic && m.topic !== 'general' && m.topic !== '');
+
+                        return (
+                            <AccordionItem value="BIOLOGY" key="BIOLOGY">
+                                <AccordionTrigger className="text-lg font-semibold">
+                                    <div className="flex items-center gap-3">
+                                        <Folder className="h-6 w-6 text-accent" />
+                                        BIOLOGY
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    <div className="pt-4 pl-6 space-y-4">
+                                        {allBiologyMaterials.length > 0 ? (
+                                            <>
+                                                {generalBiologyMaterials.length > 0 && (
+                                                    <div className="mb-8">
+                                                        <h3 className="text-md font-semibold mb-4 text-muted-foreground flex items-center gap-2">
+                                                            <Folder className="h-5 w-5" />
+                                                            General Biology
+                                                        </h3>
+                                                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                                            {generalBiologyMaterials.map(material => {
+                                                                const image = getImage(material.imageId);
+                                                                return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />;
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                {topicBiologyMaterialsExist && (
+                                                    <Accordion type="single" collapsible className="w-full">
+                                                        {biologyTopics.map(topic => {
+                                                            const topicMaterials = allBiologyMaterials.filter(m => m.topic === topic);
+                                                            if (topicMaterials.length === 0) return null;
+
+                                                            return (
+                                                                <AccordionItem value={topic} key={topic}>
+                                                                    <AccordionTrigger className="text-base font-medium">
+                                                                        <div className="flex items-center gap-3">
+                                                                            <Folder className="h-5 w-5 text-accent" />
+                                                                            {topic}
+                                                                        </div>
+                                                                    </AccordionTrigger>
+                                                                    <AccordionContent>
+                                                                        <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
+                                                                            {topicMaterials.map(material => {
+                                                                                const image = getImage(material.imageId);
+                                                                                return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />;
+                                                                            })}
+                                                                        </div>
+                                                                    </AccordionContent>
+                                                                </AccordionItem>
+                                                            );
+                                                        })}
+                                                    </Accordion>
+                                                )}
+                                            </>
+                                        ) : (
+                                            <p className="text-sm text-muted-foreground pl-4">No Biology videos available for this section yet.</p>
+                                        )}
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        );
                     }
+
 
                     const subjectMaterials = getMaterialsByTypeAndSubject('video', subject);
                     if (subjectMaterials.length === 0) {
