@@ -24,48 +24,42 @@ async function getMaterials(): Promise<Material[]> {
 
 
 export async function generateQuiz(input: GenerateQuizInput): Promise<GenerateQuizOutput> {
-    try {
-        const { title, description, referenceText, subject, topic } = input;
-        
-        let videoReferenceText = referenceText || '';
+    const { title, description, referenceText, subject, topic } = input;
+    
+    let videoReferenceText = referenceText || '';
 
-        // Find reference text from documents with the same subject and topic
-        let documentReferenceText = '';
-        if (subject) {
-            const allMaterials = await getMaterials();
-            const relevantDocuments = allMaterials.filter(m => 
-                m.type === 'document' && 
-                m.subject === subject && 
-                m.topic === topic &&
-                m.referenceText
-            );
+    // Find reference text from documents with the same subject and topic
+    let documentReferenceText = '';
+    if (subject) {
+        const allMaterials = await getMaterials();
+        const relevantDocuments = allMaterials.filter(m => 
+            m.type === 'document' && 
+            m.subject === subject && 
+            m.topic === topic &&
+            m.referenceText
+        );
 
-            if (relevantDocuments.length > 0) {
-                documentReferenceText = relevantDocuments
-                    .map(d => `--- Start of Document: ${d.title} ---\n${d.referenceText}\n--- End of Document: ${d.title} ---`)
-                    .join('\n\n');
-            }
+        if (relevantDocuments.length > 0) {
+            documentReferenceText = relevantDocuments
+                .map(d => `--- Start of Document: ${d.title} ---\n${d.referenceText}\n--- End of Document: ${d.title} ---`)
+                .join('\n\n');
         }
-        
-        // Combine reference texts
-        let combinedReferenceText = videoReferenceText;
-        if (documentReferenceText) {
-            combinedReferenceText += `\n\n## Additional Reference Material from Documents:\n\n${documentReferenceText}`;
-        }
-        
-        // Prepare input for the AI flow
-        const aiInput: GenerateQuizInput = {
-            title,
-            description: description || '',
-            // Only include referenceText if it's not empty
-            ...(combinedReferenceText.trim() && { referenceText: combinedReferenceText.trim() }),
-        };
-
-        const quiz = await generateQuizForVideo(aiInput);
-        return quiz;
-    } catch (error) {
-        console.error('Error generating quiz:', error);
-        // Re-throw so the client can handle it, e.g. with a toast message.
-        throw new Error('An error occurred while generating the quiz.');
     }
+    
+    // Combine reference texts
+    let combinedReferenceText = videoReferenceText;
+    if (documentReferenceText) {
+        combinedReferenceText += `\n\n## Additional Reference Material from Documents:\n\n${documentReferenceText}`;
+    }
+    
+    // Prepare input for the AI flow
+    const aiInput: GenerateQuizInput = {
+        title,
+        description: description || '',
+        // Only include referenceText if it's not empty
+        ...(combinedReferenceText.trim() && { referenceText: combinedReferenceText.trim() }),
+    };
+
+    const quiz = await generateQuizForVideo(aiInput);
+    return quiz;
 }
