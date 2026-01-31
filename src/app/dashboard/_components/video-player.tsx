@@ -78,12 +78,8 @@ export function VideoPlayer({ isOpen, onClose, material }: VideoPlayerProps) {
 
   // Effect for video progress simulation
   useEffect(() => {
-    if (!isOpen) {
-        // Reset progress when dialog closes if it's not complete
-        if (progress < 100) {
-            updateProgress(0);
-        }
-        return;
+    if (!isOpen || progress >= 100) {
+      return;
     }
 
     const DURATION_IN_SECONDS = 15 * 60; // 15 mins
@@ -101,7 +97,7 @@ export function VideoPlayer({ isOpen, onClose, material }: VideoPlayerProps) {
     }, UPDATE_INTERVAL_IN_MS);
 
     return () => clearInterval(progressInterval);
-  }, [isOpen, updateProgress, progress]);
+  }, [isOpen, progress, updateProgress]);
 
   // Effect to trigger quiz based on progress
   useEffect(() => {
@@ -122,8 +118,8 @@ export function VideoPlayer({ isOpen, onClose, material }: VideoPlayerProps) {
 
   const handleQuizClose = () => {
       setIsQuizOpen(false);
-      // Optional: uncomment to mark video as complete after quiz
-      // updateProgress(100);
+      // Mark video as complete after quiz
+      updateProgress(100);
   }
 
   return (
