@@ -78,7 +78,7 @@ export async function uploadMaterialAction(
     title,
     description: description || '',
     subject,
-    topic: topic || '',
+    topic: topic === 'general' ? '' : topic || '',
     type: materialType,
     imageId: '', // No longer assign a random placeholder image
     url: '',

@@ -115,7 +115,7 @@ export async function updateMaterialAction(
     description: description || '',
     subject,
     type: materialType,
-    topic: topic || '',
+    topic: topic === 'general' ? '' : topic || '',
   };
 
   if (materialType === 'video' || materialType === 'document' || materialType === 'past-paper') {

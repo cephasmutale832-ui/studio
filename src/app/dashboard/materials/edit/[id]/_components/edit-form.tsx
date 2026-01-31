@@ -108,12 +108,12 @@ export function EditMaterialForm({ subjects, material }: { subjects: string[], m
             {subject === 'SCIENCE P1' && materialType === 'video' && (
               <div className="space-y-2">
                   <Label htmlFor="topic">Physics Topic</Label>
-                  <Select name="topic" defaultValue={material.topic}>
+                  <Select name="topic" defaultValue={material.topic || 'general'}>
                       <SelectTrigger id="topic">
                           <SelectValue placeholder="Select a topic for the Physics video (optional)" />
                       </SelectTrigger>
                       <SelectContent>
-                           <SelectItem value="">General Physics</SelectItem>
+                           <SelectItem value="general">General Physics</SelectItem>
                           {physicsTopics.map(topic => (
                               <SelectItem key={topic} value={topic}>{topic}</SelectItem>
                           ))}
