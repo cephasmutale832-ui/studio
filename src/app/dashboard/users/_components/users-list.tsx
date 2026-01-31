@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -61,11 +60,18 @@ function DeleteButton() {
     );
 }
 
-function SendCodeButton() {
+function SendCodeButton({ isResend }: { isResend?: boolean }) {
     const { pending } = useFormStatus();
     return (
         <Button size="sm" type="submit" disabled={pending} variant="outline">
-             {pending ? 'Sending...' : 'Send Code'}
+             {pending ? (
+                <>
+                    <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                    {isResend ? 'Resending...' : 'Sending...'}
+                </>
+             ) : (
+                isResend ? 'Resend Code' : 'Send Code'
+            )}
         </Button>
     );
 }
@@ -159,15 +165,11 @@ function UserRow({ user }: { user: User }) {
                         </form>
                     )}
                     
-                    {user.role === 'student' && user.status === 'approved' && user.paymentCodeSent === false && (
+                    {user.role === 'student' && (
                         <form action={sendCodeFormAction}>
                             <input type="hidden" name="userId" value={user.id} />
-                            <SendCodeButton />
+                            <SendCodeButton isResend={user.paymentCodeSent} />
                         </form>
-                    )}
-
-                    {user.role === 'student' && user.paymentCodeSent === true && (
-                        <Button size="sm" variant="outline" disabled>Code Sent</Button>
                     )}
 
                     {user.role !== 'admin' && (
