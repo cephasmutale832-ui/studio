@@ -17,16 +17,17 @@ import { generateQuiz } from './quiz-actions';
 import { type GenerateQuizOutput } from '@/ai/flows/generate-quiz-flow';
 import { useToast } from '@/hooks/use-toast';
 import { type Material } from '@/lib/types';
+import { useMaterialProgress } from '@/hooks/use-material-progress';
 
 
 interface VideoPlayerProps {
   isOpen: boolean;
   onClose: () => void;
   material: Material;
-  updateProgress: (newProgress: number | ((prevProgress: number) => number)) => void;
 }
 
-export function VideoPlayer({ isOpen, onClose, material, updateProgress }: VideoPlayerProps) {
+export function VideoPlayer({ isOpen, onClose, material }: VideoPlayerProps) {
+  const { progress, updateProgress } = useMaterialProgress(material.id);
   const [quiz, setQuiz] = useState<GenerateQuizOutput | null>(null);
   const [isQuizLoading, setIsQuizLoading] = useState(false);
   const [isQuizOpen, setIsQuizOpen] = useState(false);
@@ -45,90 +46,80 @@ export function VideoPlayer({ isOpen, onClose, material, updateProgress }: Video
   const embedUrl = fileId ? `https://drive.google.com/file/d/${fileId}/preview` : '';
   const downloadUrl = fileId ? `https://drive.google.com/uc?export=download&id=${fileId}` : '#';
 
-  // Fetch quiz when video player opens
+  // Effect to fetch quiz data
   useEffect(() => {
-    if (isOpen && !quiz && !isQuizLoading) {
-      const fetchQuiz = async () => {
-        setIsQuizLoading(true);
-        setIsQuizTriggered(false);
-        try {
-            const generatedQuiz = await generateQuiz({ title, description: description || '', referenceText });
-            if (generatedQuiz && generatedQuiz.questions.length > 0) {
-                setQuiz(generatedQuiz);
-            } else {
-                console.log("Quiz generation resulted in 0 questions. The quiz will not be shown.");
-                setQuiz(null);
-            }
-        } catch (error) {
-            console.error('Failed to fetch quiz:', error);
-            toast({
-                title: 'Quiz Generation Failed',
-                description: 'Could not generate a quiz for this video. Please try again later.',
-                variant: 'destructive',
-            });
-            setQuiz(null);
-        } finally {
-            setIsQuizLoading(false);
-        }
-      };
-      fetchQuiz();
-    }
-    
-    if (!isOpen) {
-      // Reset on close
-      setQuiz(null);
-      setIsQuizOpen(false);
+    if (isOpen) {
+      setIsQuizLoading(true);
       setIsQuizTriggered(false);
+      setQuiz(null); // Reset previous quiz
+
+      generateQuiz({ title, description: description || '', referenceText })
+        .then((generatedQuiz) => {
+          if (generatedQuiz && generatedQuiz.questions.length > 0) {
+            setQuiz(generatedQuiz);
+          } else {
+            setQuiz(null);
+          }
+        })
+        .catch((error) => {
+          console.error('Failed to fetch quiz:', error);
+          toast({
+            title: 'Quiz Generation Failed',
+            description: 'Could not generate a quiz for this video.',
+            variant: 'destructive',
+          });
+          setQuiz(null);
+        })
+        .finally(() => {
+          setIsQuizLoading(false);
+        });
     }
-  }, [isOpen, title, description, referenceText, quiz, isQuizLoading, toast]);
+  }, [isOpen, title, description, referenceText, toast]);
 
-
+  // Effect for video progress simulation
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+        // Reset progress when dialog closes if it's not complete
+        if (progress < 100) {
+            updateProgress(0);
+        }
+        return;
+    }
 
-    // Simulate video playback progress.
-    const DURATION_IN_SECONDS = 15 * 60; // 15 mins simulation
+    const DURATION_IN_SECONDS = 15 * 60; // 15 mins
     const UPDATE_INTERVAL_IN_MS = 1000;
     const progressIncrement = 100 / DURATION_IN_SECONDS;
 
-    let progressInterval: NodeJS.Timeout | null = null;
-    
-    const startProgressSimulation = () => {
-      progressInterval = setInterval(() => {
-        let shouldStop = false;
-        updateProgress(prevProgress => {
-          if (prevProgress >= 100) {
-            shouldStop = true;
-            return 100;
-          }
-          const currentProgress = prevProgress + progressIncrement;
-
-          // Trigger quiz at 80%
-          if (currentProgress >= 80 && !isQuizTriggered && quiz && quiz.questions.length > 0) {
-              setIsQuizOpen(true);
-              setIsQuizTriggered(true); // Ensure it only triggers once
-          }
-          
-          return currentProgress;
-        });
-
-        if (shouldStop && progressInterval) {
-            clearInterval(progressInterval);
+    const progressInterval = setInterval(() => {
+      updateProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval);
+          return 100;
         }
+        return prev + progressIncrement;
+      });
+    }, UPDATE_INTERVAL_IN_MS);
 
-      }, UPDATE_INTERVAL_IN_MS);
+    return () => clearInterval(progressInterval);
+  }, [isOpen, updateProgress, progress]);
+
+  // Effect to trigger quiz based on progress
+  useEffect(() => {
+    if (isOpen && progress >= 80 && !isQuizTriggered && quiz && quiz.questions.length > 0) {
+      setIsQuizOpen(true);
+      setIsQuizTriggered(true);
     }
-    
-    startProgressSimulation();
-
-    // Cleanup on close
-    return () => {
-      if (progressInterval) {
-        clearInterval(progressInterval);
-      }
-    };
-  }, [isOpen, updateProgress, isQuizTriggered, quiz]);
+  }, [progress, isOpen, isQuizTriggered, quiz]);
   
+  // Effect to reset state when dialog is closed
+  useEffect(() => {
+      if (!isOpen) {
+          setIsQuizOpen(false);
+          setIsQuizTriggered(false);
+          setQuiz(null);
+      }
+  }, [isOpen]);
+
   const handleQuizClose = () => {
       setIsQuizOpen(false);
       // Optional: uncomment to mark video as complete after quiz
@@ -182,7 +173,7 @@ export function VideoPlayer({ isOpen, onClose, material, updateProgress }: Video
         </DialogContent>
       </Dialog>
       
-      {quiz && (
+      {quiz && quiz.questions.length > 0 && (
         <QuizDialog 
           isOpen={isQuizOpen}
           onClose={handleQuizClose}

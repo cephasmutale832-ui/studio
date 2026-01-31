@@ -69,8 +69,8 @@ const generateQuizFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await quizPrompt(input);
-    if (!output) {
-      throw new Error('The AI model did not return a valid quiz. Please try again.');
+    if (!output || !output.questions || output.questions.length === 0) {
+      throw new Error('The AI model did not return any questions for the quiz. Please try again.');
     }
     return output;
   }

@@ -145,7 +145,6 @@ export function MaterialCard({ material, image, userRole, isLocked, previousMate
           isOpen={isPlayerOpen}
           onClose={() => setPlayerOpen(false)}
           material={material}
-          updateProgress={updateProgress}
         />
       )}
       <DeleteMaterialDialog 
