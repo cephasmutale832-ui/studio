@@ -292,7 +292,7 @@ Sidebar.displayName = "Sidebar"
 const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
   React.ComponentProps<typeof Button>
->(({ className, onClick, children, ...props }, ref) => {
+>(({ className, onClick, children, asChild, ...props }, ref) => {
   const { toggleSidebar } = useSidebar()
 
   return (
@@ -306,6 +306,7 @@ const SidebarTrigger = React.forwardRef<
         onClick?.(event)
         toggleSidebar()
       }}
+      asChild={asChild}
       {...props}
     >
       {children ?? (
@@ -754,9 +755,11 @@ const SidebarMenuSkeleton = React.forwardRef<
   }
 >(({ className, showIcon = false, ...props }, ref) => {
   // Random width between 50 to 90%.
-  const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`
-  }, [])
+  const [width, setWidth] = React.useState("80%");
+
+  React.useEffect(() => {
+    setWidth(`${Math.floor(Math.random() * 40) + 50}%`);
+  }, []);
 
   return (
     <div

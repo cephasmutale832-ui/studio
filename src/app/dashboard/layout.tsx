@@ -115,9 +115,11 @@ export default async function DashboardLayout({
         </Sidebar>
         <SidebarInset>
             <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-                <SidebarTrigger variant="outline" className="md:hidden">
+                <SidebarTrigger asChild variant="outline" className="md:hidden">
+                  <Button variant="outline" size="icon" className="h-7 w-7">
                     <PanelLeft className="h-5 w-5" />
                     <span className="sr-only">Toggle Menu</span>
+                  </Button>
                 </SidebarTrigger>
                 <h1 className="text-xl font-headline text-primary">Mango SmartLearning</h1>
                 <div className="relative ml-auto flex-1 md:grow-0">
