@@ -58,11 +58,11 @@ export default async function DashboardPage() {
   }
 
   const getMaterialsByTypeAndSubject = (type: Material['type'], subject: string) => {
-    return allMaterials.filter(m => m.type === type && m.subject === subject);
+    return allMaterials.filter(m => m.type === type && m.subject.startsWith(subject));
   };
 
   const getPastPapersBySubject = (subject: string) => {
-    return allMaterials.filter(m => m.type === 'past-paper' && m.subject === subject);
+    return allMaterials.filter(m => m.type === 'past-paper' && m.subject.startsWith(subject));
   }
 
   return (
