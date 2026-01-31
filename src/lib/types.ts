@@ -23,6 +23,7 @@ export interface Material {
   description?: string;
   type: 'video' | 'document' | 'quiz' | 'past-paper';
   subject: string;
+  topic?: string;
   imageId: string;
   url?: string;
 }

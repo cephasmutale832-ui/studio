@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useActionState } from 'react-dom';
@@ -28,6 +29,7 @@ import {
 } from '@/components/ui/select';
 import { type Material } from '@/lib/types';
 import { useRouter } from 'next/navigation';
+import { physicsTopics } from '@/lib/topics';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -51,6 +53,7 @@ export function EditMaterialForm({ subjects, material }: { subjects: string[], m
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const [materialType, setMaterialType] = useState(material.type);
+  const [subject, setSubject] = useState(material.subject);
   
   useEffect(() => {
     if (state.success === false && state.message) {
@@ -88,7 +91,7 @@ export function EditMaterialForm({ subjects, material }: { subjects: string[], m
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="subject">Subject / Section</Label>
-                    <Select name="subject" required defaultValue={material.subject}>
+                    <Select name="subject" required defaultValue={material.subject} onValueChange={setSubject}>
                         <SelectTrigger id="subject">
                             <SelectValue placeholder="Select a subject" />
                         </SelectTrigger>
@@ -101,6 +104,23 @@ export function EditMaterialForm({ subjects, material }: { subjects: string[], m
                     {state.errors?.subject && <p className="text-sm font-medium text-destructive">{state.errors.subject[0]}</p>}
                 </div>
             </div>
+
+            {subject === 'SCIENCE P1' && materialType === 'video' && (
+              <div className="space-y-2">
+                  <Label htmlFor="topic">Physics Topic</Label>
+                  <Select name="topic" defaultValue={material.topic}>
+                      <SelectTrigger id="topic">
+                          <SelectValue placeholder="Select a topic for the Physics video (optional)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                           <SelectItem value="">General Physics</SelectItem>
+                          {physicsTopics.map(topic => (
+                              <SelectItem key={topic} value={topic}>{topic}</SelectItem>
+                          ))}
+                      </SelectContent>
+                  </Select>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="description">Description (Optional)</Label>

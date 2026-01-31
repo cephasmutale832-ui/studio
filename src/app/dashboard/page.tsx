@@ -30,6 +30,7 @@ import { AlertTriangle, Folder } from "lucide-react";
 import { MaterialCard } from "./_components/material-card";
 import { subjects } from "@/lib/subjects";
 import { type Material } from "@/lib/types";
+import { physicsTopics } from "@/lib/topics";
 
 export default async function DashboardPage() {
   const session = await getSession();
@@ -145,6 +146,9 @@ export default async function DashboardPage() {
                             return null;
                         }
 
+                        const generalPhysicsMaterials = physicsMaterials.filter(m => !m.topic || m.topic === '');
+                        const topicPhysicsMaterialsExist = physicsMaterials.some(m => m.topic && m.topic !== '');
+
                         return (
                             <AccordionItem value="SCIENCE" key="SCIENCE">
                                 <AccordionTrigger className="text-lg font-semibold">
@@ -161,16 +165,46 @@ export default async function DashboardPage() {
                                                 PHYSICS (SCIENCE P1)
                                             </h3>
                                             {physicsMaterials.length > 0 ? (
-                                                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                                                    {physicsMaterials.map((material) => {
-                                                        const image = getImage(material.imageId);
-                                                        return (
-                                                        <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />
-                                                        )
-                                                    })}
+                                                <div className="pl-4">
+                                                    {generalPhysicsMaterials.length > 0 && (
+                                                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-6">
+                                                            {generalPhysicsMaterials.map(material => {
+                                                                const image = getImage(material.imageId);
+                                                                return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />;
+                                                            })}
+                                                        </div>
+                                                    )}
+
+                                                    {topicPhysicsMaterialsExist && (
+                                                        <Accordion type="single" collapsible className="w-full">
+                                                            {physicsTopics.map(topic => {
+                                                                const topicMaterials = physicsMaterials.filter(m => m.topic === topic);
+                                                                if (topicMaterials.length === 0) return null;
+
+                                                                return (
+                                                                    <AccordionItem value={topic} key={topic}>
+                                                                        <AccordionTrigger className="text-base font-medium">
+                                                                            <div className="flex items-center gap-3">
+                                                                                <Folder className="h-5 w-5 text-accent" />
+                                                                                {topic}
+                                                                            </div>
+                                                                        </AccordionTrigger>
+                                                                        <AccordionContent>
+                                                                            <div className="grid gap-6 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
+                                                                                {topicMaterials.map(material => {
+                                                                                    const image = getImage(material.imageId);
+                                                                                    return <MaterialCard key={material.id} material={material} image={image} userRole={user.role} />;
+                                                                                })}
+                                                                            </div>
+                                                                        </AccordionContent>
+                                                                    </AccordionItem>
+                                                                );
+                                                            })}
+                                                        </Accordion>
+                                                    )}
                                                 </div>
                                             ) : (
-                                                <p className="text-sm text-muted-foreground">No Physics videos available for this section yet.</p>
+                                                <p className="text-sm text-muted-foreground pl-4">No Physics videos available for this section yet.</p>
                                             )}
                                         </div>
 

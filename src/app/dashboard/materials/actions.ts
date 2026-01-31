@@ -1,3 +1,4 @@
+
 'use server';
 
 import { z } from 'zod';
@@ -61,6 +62,7 @@ const updateSchema = z.object({
   description: z.string().optional(),
   subject: z.string().min(1, 'A subject is required.'),
   materialType: z.enum(['video', 'document', 'quiz', 'past-paper']),
+  topic: z.string().optional(),
 });
 
 
@@ -86,6 +88,7 @@ export async function updateMaterialAction(
     description: formData.get('description'),
     subject: formData.get('subject'),
     materialType: formData.get('materialType'),
+    topic: formData.get('topic'),
   });
 
   if (!validatedFields.success) {
@@ -96,7 +99,7 @@ export async function updateMaterialAction(
     };
   }
 
-  const { id, materialType, title, description, subject } = validatedFields.data;
+  const { id, materialType, title, description, subject, topic } = validatedFields.data;
 
   const materials = await getMaterials();
   const materialIndex = materials.findIndex(m => m.id === id);
@@ -111,6 +114,7 @@ export async function updateMaterialAction(
     description: description || '',
     subject,
     type: materialType,
+    topic: topic || '',
   };
 
   if (materialType === 'video' || materialType === 'document' || materialType === 'past-paper') {

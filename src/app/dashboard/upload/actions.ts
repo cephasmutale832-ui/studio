@@ -12,6 +12,7 @@ const uploadSchema = z.object({
   description: z.string().optional(),
   subject: z.string().min(1, 'A subject is required.'),
   materialType: z.enum(['video', 'document', 'quiz', 'past-paper']),
+  topic: z.string().optional(),
 });
 
 interface FormState {
@@ -58,6 +59,7 @@ export async function uploadMaterialAction(
     description: formData.get('description'),
     subject: formData.get('subject'),
     materialType: formData.get('materialType'),
+    topic: formData.get('topic'),
   });
 
   if (!validatedFields.success) {
@@ -68,13 +70,14 @@ export async function uploadMaterialAction(
     };
   }
 
-  const { materialType, title, description, subject } = validatedFields.data;
+  const { materialType, title, description, subject, topic } = validatedFields.data;
 
   const newMaterial: Material = {
     id: `material-${Date.now()}`,
     title,
     description: description || '',
     subject,
+    topic: topic || '',
     type: materialType,
     imageId: '', // No longer assign a random placeholder image
     url: '',

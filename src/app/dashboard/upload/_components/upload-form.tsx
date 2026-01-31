@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useActionState } from 'react';
@@ -26,6 +27,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { physicsTopics } from '@/lib/topics';
+import { type Material } from '@/lib/types';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -47,7 +50,8 @@ export default function UploadForm({ subjects }: { subjects: string[] }) {
   const [state, formAction] = useActionState(uploadMaterialAction, { success: null, message: '' });
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
-  const [materialType, setMaterialType] = useState('video');
+  const [materialType, setMaterialType] = useState<Material['type']>('video');
+  const [subject, setSubject] = useState('');
   
   useEffect(() => {
     if (state.success === true) {
@@ -57,6 +61,7 @@ export default function UploadForm({ subjects }: { subjects: string[] }) {
       });
       formRef.current?.reset();
       setMaterialType('video');
+      setSubject('');
     } else if (state.success === false && state.message) {
       toast({
         title: 'Upload Failed',
@@ -90,7 +95,7 @@ export default function UploadForm({ subjects }: { subjects: string[] }) {
                 </div>
                  <div className="space-y-2">
                     <Label htmlFor="subject">Subject / Section</Label>
-                    <Select name="subject" required>
+                    <Select name="subject" required onValueChange={setSubject}>
                         <SelectTrigger id="subject">
                             <SelectValue placeholder="Select a subject" />
                         </SelectTrigger>
@@ -103,6 +108,23 @@ export default function UploadForm({ subjects }: { subjects: string[] }) {
                     {state.errors?.subject && <p className="text-sm font-medium text-destructive">{state.errors.subject[0]}</p>}
                 </div>
             </div>
+
+            {subject === 'SCIENCE P1' && materialType === 'video' && (
+              <div className="space-y-2">
+                  <Label htmlFor="topic">Physics Topic</Label>
+                  <Select name="topic">
+                      <SelectTrigger id="topic">
+                          <SelectValue placeholder="Select a topic for the Physics video (optional)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                          <SelectItem value="">General Physics</SelectItem>
+                          {physicsTopics.map(topic => (
+                              <SelectItem key={topic} value={topic}>{topic}</SelectItem>
+                          ))}
+                      </SelectContent>
+                  </Select>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="description">Description (Optional)</Label>
@@ -118,7 +140,7 @@ export default function UploadForm({ subjects }: { subjects: string[] }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                     <Label htmlFor="materialType">Material Type</Label>
-                    <Select name="materialType" required defaultValue="video" onValueChange={(value) => setMaterialType(value)}>
+                    <Select name="materialType" required defaultValue="video" onValueChange={(value) => setMaterialType(value as Material['type'])}>
                         <SelectTrigger id="materialType">
                             <SelectValue placeholder="Select a type" />
                         </SelectTrigger>
