@@ -9,6 +9,7 @@ export interface User {
   whatsappNumber?: string;
   paymentCode?: string;
   paymentCodeSent?: boolean;
+  password?: string;
 }
 
 export interface Session {

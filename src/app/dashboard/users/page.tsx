@@ -1,7 +1,7 @@
 
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { MOCK_USERS } from "@/lib/users";
+import { getUsers } from "@/lib/users";
 import { UsersList } from "./_components/users-list";
 import { type User } from "@/lib/types";
 import {
@@ -19,7 +19,7 @@ export default async function UsersPage() {
         redirect('/dashboard');
     }
 
-    const users = MOCK_USERS as User[];
+    const users = await getUsers();
 
     return (
         <div className="mx-auto grid w-full max-w-4xl gap-6">

@@ -1,7 +1,7 @@
 
 'use server';
 
-import { MOCK_USERS } from '@/lib/users';
+import { getUsers, saveUsers } from '@/lib/users';
 import { revalidatePath } from 'next/cache';
 
 interface ActionState {
@@ -16,12 +16,13 @@ export async function deleteStudentAction(prevState: ActionState | null, formDat
         return { success: false, message: 'Student ID is missing.' };
     }
 
-    const studentIndex = MOCK_USERS.findIndex(u => u.id === studentId);
+    const users = await getUsers();
+    const studentIndex = users.findIndex(u => u.id === studentId);
 
-    if (studentIndex > -1 && MOCK_USERS[studentIndex].role === 'student') {
-        const studentName = MOCK_USERS[studentIndex].name;
-        // In a real app, you would perform a database delete operation.
-        MOCK_USERS.splice(studentIndex, 1);
+    if (studentIndex > -1 && users[studentIndex].role === 'student') {
+        const studentName = users[studentIndex].name;
+        users.splice(studentIndex, 1);
+        await saveUsers(users);
         
         revalidatePath('/dashboard/students');
         return { success: true, message: `Student "${studentName}" has been deleted.` };

@@ -1,7 +1,7 @@
 
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { MOCK_USERS } from "@/lib/users";
+import { getUsers } from "@/lib/users";
 import { StudentsList } from "./_components/students-list";
 import { type User } from "@/lib/types";
 import {
@@ -19,7 +19,8 @@ export default async function StudentsPage() {
         redirect('/dashboard');
     }
 
-    const students = MOCK_USERS.filter(u => u.role === 'student') as User[];
+    const users = await getUsers();
+    const students = users.filter(u => u.role === 'student') as User[];
 
     return (
         <div className="mx-auto grid w-full max-w-4xl gap-6">

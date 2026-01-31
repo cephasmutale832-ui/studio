@@ -4,7 +4,7 @@
 import { z } from 'zod';
 import { updateSessionPayment } from '@/app/actions';
 import { getSession } from '@/lib/auth';
-import { MOCK_USERS } from '@/lib/users';
+import { getUsers, saveUsers } from '@/lib/users';
 
 interface FormState {
   success: boolean | null;
@@ -29,19 +29,21 @@ export async function validatePaymentCodeAction(
   }
   const code = validatedCode.data;
 
-  const userIndex = MOCK_USERS.findIndex(u => u.id === session.user.id);
+  const users = await getUsers();
+  const userIndex = users.findIndex(u => u.id === session.user.id);
   if (userIndex === -1) {
     return { success: false, message: 'User not found.' };
   }
 
-  const user = MOCK_USERS[userIndex];
+  const user = users[userIndex];
   
   if (user.paymentCode && user.paymentCode.toUpperCase() === code.toUpperCase()) {
     // Code matches. Update the session.
     await updateSessionPayment();
 
     // Optionally, clear the payment code so it can't be reused
-    (MOCK_USERS[userIndex] as any).paymentCode = '';
+    users[userIndex].paymentCode = '';
+    await saveUsers(users);
 
     return { success: true, message: 'Payment validated successfully!' };
   } else {

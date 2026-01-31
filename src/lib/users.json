@@ -1,0 +1,17 @@
+
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Cephas Mutale",
+      "email": "cephasmutale832@gmail.com",
+      "password": "Cep12345TY",
+      "avatar": "",
+      "role": "admin",
+      "status": "approved",
+      "whatsappNumber": "",
+      "paymentCode": "",
+      "paymentCodeSent": false
+    }
+  ]
+}

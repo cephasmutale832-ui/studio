@@ -1,7 +1,7 @@
 
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { MOCK_USERS } from "@/lib/users";
+import { getUsers } from "@/lib/users";
 import { AgentsList } from "./_components/agents-list";
 import { type User } from "@/lib/types";
 import {
@@ -19,7 +19,8 @@ export default async function AgentsPage() {
         redirect('/dashboard');
     }
 
-    const agents = MOCK_USERS.filter(u => u.role === 'agent') as User[];
+    const users = await getUsers();
+    const agents = users.filter(u => u.role === 'agent') as User[];
 
     return (
         <div className="mx-auto grid w-full max-w-4xl gap-6">

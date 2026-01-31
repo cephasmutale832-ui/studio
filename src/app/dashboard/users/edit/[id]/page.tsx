@@ -1,7 +1,7 @@
 
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { MOCK_USERS } from "@/lib/users";
+import { getUsers } from "@/lib/users";
 import { type User } from "@/lib/types";
 import {
     Alert,
@@ -12,7 +12,8 @@ import { AlertTriangle } from "lucide-react";
 import { EditUserForm } from "./_components/edit-user-form";
 
 async function getUser(id: string): Promise<User | undefined> {
-    return MOCK_USERS.find(u => u.id === id);
+    const users = await getUsers();
+    return users.find(u => u.id === id);
 }
 
 

@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { MOCK_USERS } from '@/lib/users';
+import { getUsers, saveUsers } from '@/lib/users';
 
 // Schemas
 const signupSchema = z.object({
@@ -41,8 +41,9 @@ export async function login(prevState: any, formData: FormData) {
   }
 
   const { email, password } = validatedFields.data;
-
-  const user = MOCK_USERS.find(u => u.email === email && (u as any).password === password);
+  
+  const users = await getUsers();
+  const user = users.find(u => u.email === email && u.password === password);
 
   if (!user || user.role === 'student') {
     return {
@@ -96,9 +97,10 @@ export async function studentSignup(prevState: any, formData: FormData) {
   }
   
   const { name, email, password, whatsappNumber } = validatedFields.data;
+  const users = await getUsers();
 
   // Check if user already exists
-  if (MOCK_USERS.some(u => u.email === email)) {
+  if (users.some(u => u.email === email)) {
     return {
       success: false,
       errors: { email: ['An account with this email already exists.'] },
@@ -119,7 +121,8 @@ export async function studentSignup(prevState: any, formData: FormData) {
     paymentCodeSent: false,
   };
 
-  MOCK_USERS.push(newUser as any); // Add to in-memory store
+  users.push(newUser);
+  await saveUsers(users);
   
   return {
       success: true,
@@ -144,8 +147,9 @@ export async function agentSignup(prevState: any, formData: FormData) {
   }
   
   const { name, email, password } = validatedFields.data;
+  const users = await getUsers();
 
-  if (MOCK_USERS.some(u => u.email === email)) {
+  if (users.some(u => u.email === email)) {
     return {
       success: false,
       errors: { email: ['An account with this email already exists.'] },
@@ -163,7 +167,8 @@ export async function agentSignup(prevState: any, formData: FormData) {
     status: 'pending' as const,
   };
 
-  MOCK_USERS.push(newAgent as any);
+  users.push(newAgent);
+  await saveUsers(users);
 
   return {
       success: true,
@@ -188,7 +193,8 @@ export async function studentLogin(prevState: any, formData: FormData) {
 
   const { email, password } = validatedFields.data;
 
-  const user = MOCK_USERS.find(u => u.email === email && (u as any).password === password && u.role === 'student');
+  const users = await getUsers();
+  const user = users.find(u => u.email === email && u.password === password && u.role === 'student');
 
   if (!user) {
     return {
@@ -300,13 +306,14 @@ export async function updateProfile(prevState: ProfileFormState | null, formData
         }
     }
     
-    const userIndex = MOCK_USERS.findIndex(u => u.id === userId);
+    const users = await getUsers();
+    const userIndex = users.findIndex(u => u.id === userId);
     if (userIndex === -1) {
         return { success: false, message: 'User not found.' };
     }
 
     // Update user in our mock database
-    MOCK_USERS[userIndex].name = name;
+    users[userIndex].name = name;
 
     // In a real app, you would handle file upload here and get a new URL
     // For this mock, we'll just log it and not change the avatar
@@ -318,6 +325,8 @@ export async function updateProfile(prevState: ProfileFormState | null, formData
         console.log('Note: File upload is not fully implemented in this mock environment.');
         console.log('----------------------------');
     }
+
+    await saveUsers(users);
 
     // Update the session cookie
     const newSession = {
