@@ -407,11 +407,12 @@ export default async function DashboardPage() {
                             </AccordionTrigger>
                             <AccordionContent>
                                 <div className="grid gap-x-6 gap-y-8 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
-                                {subjectMaterials.map((material) => {
+                                {subjectMaterials.map((material, index) => {
                                     const image = getImage(material.imageId);
+                                    const isLocked = !isRegistered && index >= 3;
                                     return (
                                       <div key={material.id}>
-                                        <MaterialCard material={material} image={image} userRole={user.role} isRegistered={isRegistered}/>
+                                        <MaterialCard material={material} image={image} userRole={user.role} isLocked={isLocked} isRegistered={isRegistered}/>
                                         <h3 className="mt-2 font-semibold text-sm leading-tight truncate">{material.title}</h3>
                                       </div>
                                     )
@@ -441,11 +442,12 @@ export default async function DashboardPage() {
                             </AccordionTrigger>
                             <AccordionContent>
                                 <div className="grid gap-x-6 gap-y-8 pt-4 pl-6 md:grid-cols-2 lg:grid-cols-3">
-                                {subjectMaterials.map((material) => {
+                                {subjectMaterials.map((material, index) => {
                                     const image = getImage(material.imageId);
+                                    const isLocked = !isRegistered && index >= 3;
                                     return (
                                       <div key={material.id}>
-                                        <MaterialCard material={material} image={image} userRole={user.role} isRegistered={isRegistered}/>
+                                        <MaterialCard material={material} image={image} userRole={user.role} isLocked={isLocked} isRegistered={isRegistered}/>
                                         <h3 className="mt-2 font-semibold text-sm leading-tight truncate">{material.title}</h3>
                                       </div>
                                     )
@@ -463,3 +465,5 @@ export default async function DashboardPage() {
     </div>
   );
 }
+
+    
