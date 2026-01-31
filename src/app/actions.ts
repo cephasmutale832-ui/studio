@@ -221,7 +221,7 @@ export async function studentLogin(prevState: any, formData: FormData) {
     };
   }
 
-  if (user.status !== 'approved') {
+  if (user.status === 'pending') {
     return {
       errors: { email: ['This student account has not been approved.'] },
       message: 'Account not approved.',
