@@ -7,7 +7,7 @@ import { useFormStatus } from 'react-dom';
 import { type User } from '@/lib/types';
 import { approveUserAction, deleteUserAction, sendPaymentCodeAction } from '../actions';
 import { useToast } from '@/hooks/use-toast';
-import { LoaderCircle, Trash2 } from 'lucide-react';
+import { LoaderCircle, Trash2, Edit } from 'lucide-react';
 import {
     Table,
     TableBody,
@@ -29,6 +29,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { ToastAction } from '@/components/ui/toast';
+import Link from 'next/link';
 
 function ApproveButton() {
     const { pending } = useFormStatus();
@@ -170,28 +171,35 @@ function UserRow({ user }: { user: User }) {
                     )}
 
                     {user.role !== 'admin' && (
-                        <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
-                            <AlertDialogTrigger asChild>
-                                <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive">
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                            <form action={deleteFormAction}>
-                                <input type="hidden" name="userId" value={user.id} />
-                                <AlertDialogHeader>
-                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete the account for <span className="font-semibold">{user.name}</span>.
-                                </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <DeleteButton />
-                                </AlertDialogFooter>
-                            </form>
-                            </AlertDialogContent>
-                        </AlertDialog>
+                        <>
+                            <Button asChild size="icon" variant="ghost">
+                                <Link href={`/dashboard/users/edit/${user.id}`}>
+                                    <Edit className="h-4 w-4" />
+                                </Link>
+                            </Button>
+                            <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+                                <AlertDialogTrigger asChild>
+                                    <Button size="icon" variant="ghost" className="text-destructive hover:text-destructive">
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                <form action={deleteFormAction}>
+                                    <input type="hidden" name="userId" value={user.id} />
+                                    <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This action cannot be undone. This will permanently delete the account for <span className="font-semibold">{user.name}</span>.
+                                    </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <DeleteButton />
+                                    </AlertDialogFooter>
+                                </form>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </>
                     )}
                 </div>
             </TableCell>

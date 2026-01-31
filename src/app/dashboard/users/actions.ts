@@ -3,6 +3,8 @@
 
 import { MOCK_USERS } from '@/lib/users';
 import { revalidatePath } from 'next/cache';
+import { z } from 'zod';
+import { redirect } from 'next/navigation';
 
 interface ActionState {
     success: boolean | null;
@@ -96,4 +98,68 @@ export async function sendPaymentCodeAction(prevState: SendCodeActionState | nul
         message: 'Code generated. Click the button to send it via WhatsApp.',
         whatsAppLink: whatsAppLink,
     };
+}
+
+
+const updateUserSchema = z.object({
+    userId: z.string(),
+    name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
+    role: z.enum(['agent', 'student']),
+    status: z.enum(['pending', 'approved']),
+    whatsappNumber: z.string().optional(),
+});
+
+interface UpdateUserActionState {
+    success: boolean | null;
+    message?: string;
+    errors?: {
+        name?: string[];
+        role?: string[];
+        status?: string[];
+        whatsappNumber?: string[];
+    }
+}
+
+export async function updateUserAction(prevState: UpdateUserActionState | null, formData: FormData): Promise<UpdateUserActionState> {
+    const validatedFields = updateUserSchema.safeParse({
+        userId: formData.get('userId'),
+        name: formData.get('name'),
+        role: formData.get('role'),
+        status: formData.get('status'),
+        whatsappNumber: formData.get('whatsappNumber'),
+    });
+
+    if (!validatedFields.success) {
+        return {
+            success: false,
+            message: 'Invalid data.',
+            errors: validatedFields.error.flatten().fieldErrors,
+        };
+    }
+
+    const { userId, name, role, status, whatsappNumber } = validatedFields.data;
+
+    const userIndex = MOCK_USERS.findIndex(u => u.id === userId);
+
+    if (userIndex === -1) {
+        return { success: false, message: 'User not found.' };
+    }
+
+    const user = MOCK_USERS[userIndex];
+    if (user.role === 'admin') {
+        return { success: false, message: 'Administrator accounts cannot be modified through this form.' };
+    }
+
+    // Update user
+    MOCK_USERS[userIndex] = {
+        ...user,
+        name,
+        role,
+        status,
+        whatsappNumber: whatsappNumber ?? user.whatsappNumber,
+    };
+    
+    revalidatePath('/dashboard/users');
+    revalidatePath(`/dashboard/users/edit/${userId}`);
+    redirect('/dashboard/users');
 }
