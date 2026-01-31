@@ -2,8 +2,7 @@
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from 'next/link';
-import fs from 'fs/promises';
-import path from 'path';
+import { getMaterials } from '@/lib/materials';
 
 import {
   Accordion,
@@ -43,14 +42,11 @@ export default async function DashboardPage() {
   const isTrialExpired = session.isTrial && new Date(session.expires) < new Date();
   const isRegistered = user.role === 'admin' || user.role === 'agent' || user.status === 'registered';
   
-  const materialsFilePath = path.join(process.cwd(), 'src', 'lib', 'materials.json');
   let allMaterials: Material[] = [];
   try {
-      const fileContents = await fs.readFile(materialsFilePath, 'utf8');
-      const data = JSON.parse(fileContents);
-      allMaterials = data.materials || [];
+      allMaterials = await getMaterials();
   } catch (error) {
-      console.log('Could not read materials file, starting with empty list.');
+      console.log('Could not read materials file, starting with empty list.', error);
   }
 
   const currentYear = new Date().getFullYear();
@@ -465,5 +461,3 @@ export default async function DashboardPage() {
     </div>
   );
 }
-
-    

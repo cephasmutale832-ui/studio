@@ -65,7 +65,7 @@ export function VideoPlayer({ isOpen, onClose, material }: VideoPlayerProps) {
           console.error('Failed to fetch quiz:', error);
           toast({
             title: 'Quiz Generation Failed',
-            description: 'Could not generate a quiz for this video.',
+            description: error instanceof Error ? error.message : 'Could not generate a quiz for this video.',
             variant: 'destructive',
           });
           setQuiz(null);

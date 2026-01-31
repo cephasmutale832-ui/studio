@@ -1,11 +1,10 @@
 
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import fs from 'fs/promises';
-import path from 'path';
 import { type Material } from "@/lib/types";
 import { RearrangeList } from "./_components/rearrange-list";
 import { subjects } from "@/lib/subjects";
+import { getMaterials } from "@/lib/materials";
 import {
     Card,
     CardContent,
@@ -20,19 +19,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-
-async function getMaterials(): Promise<Material[]> {
-    const materialsFilePath = path.join(process.cwd(), 'src', 'lib', 'materials.json');
-    try {
-        const fileContents = await fs.readFile(materialsFilePath, 'utf8');
-        const data = JSON.parse(fileContents);
-        return data.materials || [];
-    } catch (error) {
-        console.error("Error reading materials file:", error);
-        return [];
-    }
-}
-
 export default async function RearrangePage() {
     const session = await getSession();
 
@@ -40,7 +26,13 @@ export default async function RearrangePage() {
         redirect('/dashboard');
     }
 
-    const allMaterials = await getMaterials();
+    let allMaterials: Material[] = [];
+    try {
+        allMaterials = await getMaterials();
+    } catch (error) {
+        console.error("Failed to load materials for rearrange page:", error);
+        // We can render the page with an empty list, the component will show a message.
+    }
     
     const getSubjectLabel = (subject: string) => {
         if (subject === 'SCIENCE P1') return 'PHYSICS (SCIENCE P1)';

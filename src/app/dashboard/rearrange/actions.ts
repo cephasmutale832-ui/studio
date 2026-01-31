@@ -1,34 +1,10 @@
 
 'use server';
 
-import fs from 'fs/promises';
-import path from 'path';
 import { revalidatePath } from 'next/cache';
 import { type Material } from '@/lib/types';
 import { z } from 'zod';
-
-const materialsFilePath = path.join(process.cwd(), 'src', 'lib', 'materials.json');
-
-async function getMaterials(): Promise<Material[]> {
-    try {
-        const fileContents = await fs.readFile(materialsFilePath, 'utf8');
-        const data = JSON.parse(fileContents);
-        return data.materials || [];
-    } catch (error) {
-        if (error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
-          await saveMaterials([]);
-          return [];
-        }
-        console.error("Error reading materials file:", error);
-        return [];
-    }
-}
-
-async function saveMaterials(materials: Material[]): Promise<void> {
-    const data = { materials };
-    await fs.writeFile(materialsFilePath, JSON.stringify(data, null, 2), 'utf8');
-}
-
+import { getMaterials, saveMaterials } from '@/lib/materials';
 
 interface ActionState {
     success: boolean | null;
@@ -95,7 +71,8 @@ export async function moveMaterialAction(prevState: ActionState | null, formData
         
         return { success: true };
     } catch (error) {
+        const message = error instanceof Error ? error.message : 'An unexpected server error occurred.';
         console.error("Error moving material:", error);
-        return { success: false, message: 'An unexpected server error occurred.' };
+        return { success: false, message: message };
     }
 }

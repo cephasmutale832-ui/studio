@@ -18,22 +18,27 @@ export async function approveUserAction(prevState: ActionState | null, formData:
         return { success: false, message: 'User ID is missing.' };
     }
 
-    const users = await getUsers();
-    const userIndex = users.findIndex(u => u.id === userId);
+    try {
+        const users = await getUsers();
+        const userIndex = users.findIndex(u => u.id === userId);
 
-    if (userIndex > -1) {
-        const user = users[userIndex];
-        if (user.status === 'approved') {
-            return { success: false, message: 'User is already approved.' };
+        if (userIndex > -1) {
+            const user = users[userIndex];
+            if (user.status === 'approved') {
+                return { success: false, message: 'User is already approved.' };
+            }
+            users[userIndex].status = 'approved';
+            await saveUsers(users);
+            
+            revalidatePath('/dashboard/users');
+            return { success: true, message: `${user.name} has been approved.` };
         }
-        users[userIndex].status = 'approved';
-        await saveUsers(users);
         
-        revalidatePath('/dashboard/users');
-        return { success: true, message: `${user.name} has been approved.` };
+        return { success: false, message: 'User not found.' };
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'An unexpected server error occurred.';
+        return { success: false, message };
     }
-    
-    return { success: false, message: 'User not found.' };
 }
 
 export async function deleteUserAction(prevState: ActionState | null, formData: FormData): Promise<ActionState> {
@@ -43,24 +48,29 @@ export async function deleteUserAction(prevState: ActionState | null, formData: 
         return { success: false, message: 'User ID is missing.' };
     }
     
-    const users = await getUsers();
-    const userIndex = users.findIndex(u => u.id === userId);
+    try {
+        const users = await getUsers();
+        const userIndex = users.findIndex(u => u.id === userId);
 
-    if (userIndex > -1) {
-        const user = users[userIndex];
-        if (user.role === 'admin') {
-            return { success: false, message: 'Cannot delete an admin account.' };
+        if (userIndex > -1) {
+            const user = users[userIndex];
+            if (user.role === 'admin') {
+                return { success: false, message: 'Cannot delete an admin account.' };
+            }
+
+            const userName = user.name;
+            users.splice(userIndex, 1);
+            await saveUsers(users);
+            
+            revalidatePath('/dashboard/users');
+            return { success: true, message: `User "${userName}" has been deleted.` };
         }
-
-        const userName = user.name;
-        users.splice(userIndex, 1);
-        await saveUsers(users);
         
-        revalidatePath('/dashboard/users');
-        return { success: true, message: `User "${userName}" has been deleted.` };
+        return { success: false, message: 'User not found.' };
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'An unexpected server error occurred.';
+        return { success: false, message };
     }
-    
-    return { success: false, message: 'User not found.' };
 }
 
 
@@ -76,35 +86,40 @@ export async function sendPaymentCodeAction(prevState: SendCodeActionState | nul
         return { success: false, message: 'User ID is missing.' };
     }
 
-    const users = await getUsers();
-    const userIndex = users.findIndex(u => u.id === userId);
-    if (userIndex === -1) {
-        return { success: false, message: 'User not found.' };
+    try {
+        const users = await getUsers();
+        const userIndex = users.findIndex(u => u.id === userId);
+        if (userIndex === -1) {
+            return { success: false, message: 'User not found.' };
+        }
+
+        const user = users[userIndex];
+        if (user.role !== 'student' || !user.whatsappNumber) {
+            return { success: false, message: 'This user is not a student or has no WhatsApp number.' };
+        }
+        
+        // In a real app, this should be a cryptographically secure random string.
+        const paymentCode = `MANGO${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+
+        users[userIndex].paymentCode = paymentCode;
+        users[userIndex].paymentCodeSent = true;
+
+        await saveUsers(users);
+
+        const message = `Hello ${user.name}, your payment validation code for Mango SmartLearning is: ${paymentCode}`;
+        const whatsAppLink = `https://wa.me/${user.whatsappNumber.replace(/\+/g, '')}?text=${encodeURIComponent(message)}`;
+
+        revalidatePath('/dashboard/users');
+
+        return {
+            success: true,
+            message: 'Code generated. Click the button to send it via WhatsApp.',
+            whatsAppLink: whatsAppLink,
+        };
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'An unexpected server error occurred.';
+        return { success: false, message };
     }
-
-    const user = users[userIndex];
-    if (user.role !== 'student' || !user.whatsappNumber) {
-        return { success: false, message: 'This user is not a student or has no WhatsApp number.' };
-    }
-    
-    // In a real app, this should be a cryptographically secure random string.
-    const paymentCode = `MANGO${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-
-    users[userIndex].paymentCode = paymentCode;
-    users[userIndex].paymentCodeSent = true;
-
-    await saveUsers(users);
-
-    const message = `Hello ${user.name}, your payment validation code for Mango SmartLearning is: ${paymentCode}`;
-    const whatsAppLink = `https://wa.me/${user.whatsappNumber.replace(/\+/g, '')}?text=${encodeURIComponent(message)}`;
-
-    revalidatePath('/dashboard/users');
-
-    return {
-        success: true,
-        message: 'Code generated. Click the button to send it via WhatsApp.',
-        whatsAppLink: whatsAppLink,
-    };
 }
 
 
@@ -144,32 +159,38 @@ export async function updateUserAction(prevState: UpdateUserActionState | null, 
         };
     }
 
-    const { userId, name, role, status, whatsappNumber } = validatedFields.data;
+    try {
+        const { userId, name, role, status, whatsappNumber } = validatedFields.data;
 
-    const users = await getUsers();
-    const userIndex = users.findIndex(u => u.id === userId);
+        const users = await getUsers();
+        const userIndex = users.findIndex(u => u.id === userId);
 
-    if (userIndex === -1) {
-        return { success: false, message: 'User not found.' };
+        if (userIndex === -1) {
+            return { success: false, message: 'User not found.' };
+        }
+
+        const user = users[userIndex];
+        if (user.role === 'admin') {
+            return { success: false, message: 'Administrator accounts cannot be modified through this form.' };
+        }
+
+        // Update user
+        users[userIndex] = {
+            ...user,
+            name,
+            role,
+            status,
+            whatsappNumber: whatsappNumber ?? user.whatsappNumber,
+        };
+        
+        await saveUsers(users);
+        
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'An unexpected server error occurred.';
+        return { success: false, message };
     }
-
-    const user = users[userIndex];
-    if (user.role === 'admin') {
-        return { success: false, message: 'Administrator accounts cannot be modified through this form.' };
-    }
-
-    // Update user
-    users[userIndex] = {
-        ...user,
-        name,
-        role,
-        status,
-        whatsappNumber: whatsappNumber ?? user.whatsappNumber,
-    };
-    
-    await saveUsers(users);
     
     revalidatePath('/dashboard/users');
-    revalidatePath(`/dashboard/users/edit/${userId}`);
+    revalidatePath(`/dashboard/users/edit/${validatedFields.data.userId}`);
     redirect('/dashboard/users');
 }

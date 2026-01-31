@@ -1,10 +1,9 @@
 
 import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import fs from 'fs/promises';
-import path from 'path';
 import { type Material } from "@/lib/types";
 import { subjects } from "@/lib/subjects";
+import { getMaterials } from "@/lib/materials";
 import {
     Alert,
     AlertDescription,
@@ -14,11 +13,8 @@ import { AlertTriangle } from "lucide-react";
 import { EditMaterialForm } from "./_components/edit-form";
 
 async function getMaterial(id: string): Promise<Material | undefined> {
-    const materialsFilePath = path.join(process.cwd(), 'src', 'lib', 'materials.json');
     try {
-        const fileContents = await fs.readFile(materialsFilePath, 'utf8');
-        const data = JSON.parse(fileContents);
-        const allMaterials: Material[] = data.materials || [];
+        const allMaterials = await getMaterials();
         return allMaterials.find(m => m.id === id);
     } catch (error) {
         console.error('Could not read materials file:', error);
@@ -43,7 +39,7 @@ export default async function EditMaterialPage({ params }: { params: { id: strin
                     <AlertTriangle className="h-4 w-4" />
                     <AlertTitle>Material Not Found</AlertTitle>
                     <AlertDescription>
-                        The material you are trying to edit does not exist.
+                        The material you are trying to edit does not exist or the data file could not be read.
                     </AlertDescription>
                 </Alert>
             </div>

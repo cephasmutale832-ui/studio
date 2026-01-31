@@ -18,17 +18,34 @@ const initialAdminUser: User = {
     paymentCodeSent: false,
 };
 
-
+// This function is designed to be safe against data loss.
+// If the file is corrupted, it will throw an error rather than returning a default state,
+// which could cause the file to be overwritten on the next save.
 export async function getUsers(): Promise<User[]> {
     try {
-        await fs.access(usersFilePath);
         const fileContents = await fs.readFile(usersFilePath, 'utf8');
+        if (fileContents.trim() === '') {
+            return [initialAdminUser];
+        }
         const data = JSON.parse(fileContents);
-        return data.users || [initialAdminUser];
+        if (Array.isArray(data.users)) {
+            // Ensure the primary admin user always exists.
+            if (!data.users.some((u: User) => u.id === initialAdminUser.id && u.role === 'admin')) {
+                 data.users.unshift(initialAdminUser);
+            }
+            return data.users;
+        }
+        throw new Error('users.json data is not in the expected format.');
     } catch (error) {
-        // If file doesn't exist or is empty, create it with the initial admin user
-        await saveUsers([initialAdminUser]);
-        return [initialAdminUser];
+        if (error instanceof Error) {
+            if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+                // If the file doesn't exist, create it with the default admin.
+                await saveUsers([initialAdminUser]);
+                return [initialAdminUser];
+            }
+        }
+        console.error("Error reading users.json:", error);
+        throw new Error("Could not read the user data file. It may be corrupted.");
     }
 }
 

@@ -2,10 +2,9 @@
 'use server';
 
 import { z } from 'zod';
-import fs from 'fs/promises';
-import path from 'path';
 import { revalidatePath } from 'next/cache';
 import { type Material } from '@/lib/types';
+import { getMaterials, saveMaterials } from '@/lib/materials';
 
 const uploadSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters.'),
@@ -27,29 +26,6 @@ interface FormState {
         topic?: string[];
         referenceText?: string[];
     }
-}
-
-const materialsFilePath = path.join(process.cwd(), 'src', 'lib', 'materials.json');
-
-async function getMaterials(): Promise<Material[]> {
-    try {
-        const fileContents = await fs.readFile(materialsFilePath, 'utf8');
-        const data = JSON.parse(fileContents);
-        return data.materials || [];
-    } catch (error) {
-        if (error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
-          // If file doesn't exist, create it with an empty array
-          await saveMaterials([]);
-          return [];
-        }
-        console.error("Error reading materials file:", error);
-        return [];
-    }
-}
-
-async function saveMaterials(materials: Material[]): Promise<void> {
-    const data = { materials };
-    await fs.writeFile(materialsFilePath, JSON.stringify(data, null, 2), 'utf8');
 }
 
 export async function uploadMaterialAction(
@@ -115,7 +91,8 @@ export async function uploadMaterialAction(
 
     return { success: true, message: successMessage };
   } catch (error) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred while saving the material.';
       console.error('Failed to save material:', error);
-      return { success: false, message: 'An unexpected error occurred while saving the material.' };
+      return { success: false, message: message };
   }
 }
