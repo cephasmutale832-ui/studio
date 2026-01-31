@@ -112,7 +112,7 @@ const updateUserSchema = z.object({
     userId: z.string(),
     name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
     role: z.enum(['agent', 'student']),
-    status: z.enum(['pending', 'approved']),
+    status: z.enum(['pending', 'approved', 'registered']),
     whatsappNumber: z.string().optional(),
 });
 

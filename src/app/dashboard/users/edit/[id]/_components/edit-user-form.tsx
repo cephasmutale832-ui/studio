@@ -112,6 +112,7 @@ export function EditUserForm({ user }: { user: User }) {
                         <SelectContent>
                             <SelectItem value="pending">Pending</SelectItem>
                             <SelectItem value="approved">Approved</SelectItem>
+                            <SelectItem value="registered">Registered</SelectItem>
                         </SelectContent>
                     </Select>
                      {state.errors?.status && <p className="text-sm font-medium text-destructive">{state.errors.status[0]}</p>}

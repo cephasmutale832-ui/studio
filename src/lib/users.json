@@ -1,4 +1,3 @@
-
 {
   "users": [
     {
@@ -12,6 +11,18 @@
       "whatsappNumber": "",
       "paymentCode": "",
       "paymentCodeSent": false
+    },
+    {
+      "id": "student-1769842322618",
+      "name": "R.be",
+      "email": "6glite@gmail.com",
+      "password": "123456789",
+      "avatar": "",
+      "role": "student",
+      "status": "approved",
+      "whatsappNumber": "+260960571816",
+      "paymentCode": "",
+      "paymentCodeSent": true
     }
   ]
 }

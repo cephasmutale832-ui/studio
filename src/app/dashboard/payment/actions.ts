@@ -41,7 +41,8 @@ export async function validatePaymentCodeAction(
     // Code matches. Update the session.
     await updateSessionPayment();
 
-    // Optionally, clear the payment code so it can't be reused
+    // Update status to 'registered' and clear payment code
+    users[userIndex].status = 'registered';
     users[userIndex].paymentCode = '';
     await saveUsers(users);
 

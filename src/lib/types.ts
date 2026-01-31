@@ -5,7 +5,7 @@ export interface User {
   email: string;
   avatar: string;
   role: 'admin' | 'agent' | 'student';
-  status?: 'pending' | 'approved';
+  status?: 'pending' | 'approved' | 'registered';
   whatsappNumber?: string;
   paymentCode?: string;
   paymentCodeSent?: boolean;

@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -131,6 +132,9 @@ function UserRow({ user }: { user: User }) {
             return <Badge>Admin</Badge>;
         }
         if (user.status) {
+            if (user.status === 'registered') {
+                return <Badge className="capitalize bg-accent text-accent-foreground">Registered</Badge>
+            }
             return (
                 <Badge variant={user.status === 'approved' ? 'default' : 'secondary'} className="capitalize">
                     {user.status}
