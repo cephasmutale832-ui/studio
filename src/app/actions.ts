@@ -97,36 +97,45 @@ export async function studentSignup(prevState: any, formData: FormData) {
   }
   
   const { name, email, password, whatsappNumber } = validatedFields.data;
-  const users = await getUsers();
+  
+  try {
+    const users = await getUsers();
 
-  // Check if user already exists
-  if (users.some(u => u.email === email)) {
-    return {
-      success: false,
-      errors: { email: ['An account with this email already exists.'] },
-      message: 'User already exists.',
+    // Check if user already exists
+    if (users.some(u => u.email === email)) {
+      return {
+        success: false,
+        errors: { email: ['An account with this email already exists.'] },
+        message: 'User already exists.',
+      };
+    }
+    
+    const newUser = {
+      id: `student-${Date.now()}`,
+      name,
+      email,
+      password, // In a real app, hash and salt this!
+      avatar: '',
+      role: 'student' as const,
+      status: 'pending' as const,
+      whatsappNumber,
+      paymentCode: '',
+      paymentCodeSent: false,
     };
-  }
-  
-  const newUser = {
-    id: `student-${Date.now()}`,
-    name,
-    email,
-    password, // In a real app, hash and salt this!
-    avatar: '',
-    role: 'student' as const,
-    status: 'pending' as const,
-    whatsappNumber,
-    paymentCode: '',
-    paymentCodeSent: false,
-  };
 
-  users.push(newUser);
-  await saveUsers(users);
-  
-  return {
-      success: true,
-      message: "Registration successful! Your account is now pending approval from an administrator."
+    users.push(newUser);
+    await saveUsers(users);
+    
+    return {
+        success: true,
+        message: "Registration successful! Your account is now pending approval from an administrator."
+    }
+  } catch (error) {
+    console.error('Student Signup Error:', error);
+    return {
+        success: false,
+        message: 'A server error occurred during signup. Please try again later.'
+    };
   }
 }
 
@@ -147,32 +156,41 @@ export async function agentSignup(prevState: any, formData: FormData) {
   }
   
   const { name, email, password } = validatedFields.data;
-  const users = await getUsers();
 
-  if (users.some(u => u.email === email)) {
-    return {
-      success: false,
-      errors: { email: ['An account with this email already exists.'] },
-      message: 'User already exists.',
+  try {
+    const users = await getUsers();
+
+    if (users.some(u => u.email === email)) {
+      return {
+        success: false,
+        errors: { email: ['An account with this email already exists.'] },
+        message: 'User already exists.',
+      };
+    }
+    
+    const newAgent = {
+      id: `agent-${Date.now()}`,
+      name,
+      email,
+      password, // In a real app, hash and salt this!
+      avatar: '',
+      role: 'agent' as const,
+      status: 'pending' as const,
     };
-  }
-  
-  const newAgent = {
-    id: `agent-${Date.now()}`,
-    name,
-    email,
-    password, // In a real app, hash and salt this!
-    avatar: '',
-    role: 'agent' as const,
-    status: 'pending' as const,
-  };
 
-  users.push(newAgent);
-  await saveUsers(users);
+    users.push(newAgent);
+    await saveUsers(users);
 
-  return {
-      success: true,
-      message: "Registration successful! Your account is now pending approval from an administrator."
+    return {
+        success: true,
+        message: "Registration successful! Your account is now pending approval from an administrator."
+    }
+  } catch (error) {
+      console.error('Agent Signup Error:', error);
+      return {
+          success: false,
+          message: 'A server error occurred during signup. Please try again later.'
+      };
   }
 }
 

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import { agentSignup, studentSignup, studentLogin, login } from '@/app/actions';
 
@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Logo } from '@/app/logo';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, XCircle } from 'lucide-react';
 
 function SignUpSubmitButton() {
   const { pending } = useFormStatus();
@@ -58,10 +58,25 @@ function AgentSignupSubmitButton() {
 
 
 export default function HomePage() {
+  const studentSignupFormRef = useRef<HTMLFormElement>(null);
+  const agentSignupFormRef = useRef<HTMLFormElement>(null);
+
   const [signupState, signupFormAction] = useActionState(studentSignup, null);
   const [studentLoginState, studentLoginFormAction] = useActionState(studentLogin, null);
   const [staffLoginState, staffLoginFormAction] = useActionState(login, null);
   const [agentSignupState, agentSignupAction] = useActionState(agentSignup, null);
+
+  useEffect(() => {
+    if (signupState?.success) {
+      studentSignupFormRef.current?.reset();
+    }
+  }, [signupState]);
+  
+  useEffect(() => {
+    if (agentSignupState?.success) {
+      agentSignupFormRef.current?.reset();
+    }
+  }, [agentSignupState]);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-background">
@@ -87,7 +102,7 @@ export default function HomePage() {
                       <TabsTrigger value="signin">Existing Student</TabsTrigger>
                     </TabsList>
                     <TabsContent value="signup" className="pt-4">
-                      <form action={signupFormAction} className="space-y-4">
+                      <form ref={studentSignupFormRef} action={signupFormAction} className="space-y-4">
                         <CardDescription className="text-center">
                             Sign up to get your account approved by an admin.
                         </CardDescription>
@@ -112,13 +127,20 @@ export default function HomePage() {
                            {signupState?.errors?.password && <p className="text-sm font-medium text-destructive">{signupState.errors.password[0]}</p>}
                         </div>
                         <SignUpSubmitButton />
-                         {signupState?.success && (
+                         {signupState?.success === true && (
                             <Alert>
                                 <CheckCircle className="h-4 w-4" />
                                 <AlertTitle>Success!</AlertTitle>
                                 <AlertDescription>
                                     {signupState.message}
                                 </AlertDescription>
+                            </Alert>
+                        )}
+                        {signupState?.success === false && signupState.message && !signupState.errors && (
+                            <Alert variant="destructive">
+                                <XCircle className="h-4 w-4" />
+                                <AlertTitle>Signup Failed</AlertTitle>
+                                <AlertDescription>{signupState.message}</AlertDescription>
                             </Alert>
                         )}
                       </form>
@@ -192,7 +214,7 @@ export default function HomePage() {
                                     </form>
                                 </TabsContent>
                                 <TabsContent value="signup" className="pt-4">
-                                     <form action={agentSignupAction} className="space-y-4">
+                                     <form ref={agentSignupFormRef} action={agentSignupAction} className="space-y-4">
                                         <CardDescription className="text-center">
                                             Register as a new agent to await approval.
                                         </CardDescription>
@@ -212,13 +234,20 @@ export default function HomePage() {
                                             {agentSignupState?.errors?.password && <p className="text-sm font-medium text-destructive">{agentSignupState.errors.password[0]}</p>}
                                         </div>
                                         <AgentSignupSubmitButton />
-                                        {agentSignupState?.success && (
+                                        {agentSignupState?.success === true && (
                                             <Alert>
                                                 <CheckCircle className="h-4 w-4" />
                                                 <AlertTitle>Success!</AlertTitle>
                                                 <AlertDescription>
                                                     {agentSignupState.message}
                                                 </AlertDescription>
+                                            </Alert>
+                                        )}
+                                        {agentSignupState?.success === false && agentSignupState.message && !agentSignupState.errors && (
+                                            <Alert variant="destructive">
+                                                <XCircle className="h-4 w-4" />
+                                                <AlertTitle>Signup Failed</AlertTitle>
+                                                <AlertDescription>{agentSignupState.message}</AlertDescription>
                                             </Alert>
                                         )}
                                     </form>
