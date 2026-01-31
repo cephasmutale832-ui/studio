@@ -33,7 +33,7 @@ type SidebarContext = {
   setOpen: (open: boolean) => void
   openMobile: boolean
   setOpenMobile: (open: boolean) => void
-  isMobile: boolean
+  isMobile: boolean | undefined
   toggleSidebar: () => void
 }
 
@@ -177,6 +177,35 @@ const Sidebar = React.forwardRef<
     ref
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+
+    if (isMobile === undefined) {
+      return (
+        <div
+          className="group peer hidden md:block text-sidebar-foreground"
+          data-state="expanded"
+        >
+          <div className="duration-200 relative h-svh w-[--sidebar-width] bg-transparent transition-[width] ease-linear group-data-[collapsible=icon]:w-[--sidebar-width-icon]" />
+            <div className={cn("duration-200 fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] ease-linear md:flex border-r", className)}>
+              <div
+                data-sidebar="sidebar"
+                className="flex h-full w-full flex-col bg-sidebar"
+              >
+                <div data-sidebar="header" className="flex items-center gap-2 p-2 justify-center h-11">
+                  <Skeleton className="h-8 w-8 rounded-md" />
+                </div>
+                <div data-sidebar="content" className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden p-2">
+                  <SidebarMenuSkeleton showIcon />
+                  <SidebarMenuSkeleton showIcon />
+                  <SidebarMenuSkeleton showIcon />
+                </div>
+                <div data-sidebar="footer" className="flex flex-col gap-2 p-2 mt-auto">
+                  <SidebarMenuSkeleton showIcon />
+                </div>
+              </div>
+            </div>
+        </div>
+      )
+    }
 
     if (collapsible === "none") {
       return (
