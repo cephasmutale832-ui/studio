@@ -179,6 +179,19 @@ export function EditMaterialForm({ subjects, material }: { subjects: string[], m
                   </div>
                 ) : null}
             </div>
+            {materialType === 'video' && (
+              <div className="space-y-2">
+                <Label htmlFor="referenceText">Quiz Reference Text (Optional)</Label>
+                <Input id="referenceText" name="referenceText" type="file" accept=".txt" />
+                {state.errors?.referenceText && <p className="text-sm font-medium text-destructive">{state.errors.referenceText[0]}</p>}
+                <p className="text-xs text-muted-foreground">
+                  {material.referenceText 
+                    ? "A reference text is already associated. Upload a new .txt file to replace it." 
+                    : "Upload a .txt file to be used as a reference for generating a more accurate quiz."
+                  }
+                </p>
+              </div>
+            )}
           </CardContent>
           <CardFooter className="gap-2">
             <SubmitButton />

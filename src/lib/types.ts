@@ -27,4 +27,5 @@ export interface Material {
   topic?: string;
   imageId: string;
   url?: string;
+  referenceText?: string;
 }

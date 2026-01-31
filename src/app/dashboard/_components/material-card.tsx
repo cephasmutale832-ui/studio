@@ -144,9 +144,7 @@ export function MaterialCard({ material, image, userRole, isLocked, previousMate
         <VideoPlayer
           isOpen={isPlayerOpen}
           onClose={() => setPlayerOpen(false)}
-          title={material.title}
-          description={material.description}
-          gdriveLink={material.url}
+          material={material}
           updateProgress={updateProgress}
         />
       )}

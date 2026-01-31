@@ -16,23 +16,24 @@ import { QuizDialog } from './quiz-dialog';
 import { generateQuiz } from './quiz-actions';
 import { type GenerateQuizOutput } from '@/ai/flows/generate-quiz-flow';
 import { useToast } from '@/hooks/use-toast';
+import { type Material } from '@/lib/types';
 
 
 interface VideoPlayerProps {
   isOpen: boolean;
   onClose: () => void;
-  title: string;
-  description?: string; // Add description
-  gdriveLink: string;
+  material: Material;
   updateProgress: (newProgress: number | ((prevProgress: number) => number)) => void;
 }
 
-export function VideoPlayer({ isOpen, onClose, title, description, gdriveLink, updateProgress }: VideoPlayerProps) {
+export function VideoPlayer({ isOpen, onClose, material, updateProgress }: VideoPlayerProps) {
   const [quiz, setQuiz] = useState<GenerateQuizOutput | null>(null);
   const [isQuizLoading, setIsQuizLoading] = useState(false);
   const [isQuizOpen, setIsQuizOpen] = useState(false);
   const [isQuizTriggered, setIsQuizTriggered] = useState(false);
   const { toast } = useToast();
+
+  const { title, description, url, referenceText } = material;
 
   const getFileId = (url: string): string | null => {
     if (!url) return null;
@@ -40,7 +41,7 @@ export function VideoPlayer({ isOpen, onClose, title, description, gdriveLink, u
     return fileIdMatch ? fileIdMatch[1] : null;
   };
 
-  const fileId = getFileId(gdriveLink);
+  const fileId = getFileId(url || '');
   const embedUrl = fileId ? `https://drive.google.com/file/d/${fileId}/preview` : '';
   const downloadUrl = fileId ? `https://drive.google.com/uc?export=download&id=${fileId}` : '#';
 
@@ -51,7 +52,7 @@ export function VideoPlayer({ isOpen, onClose, title, description, gdriveLink, u
         setIsQuizLoading(true);
         setIsQuizTriggered(false);
         try {
-            const generatedQuiz = await generateQuiz({ title, description: description || '' });
+            const generatedQuiz = await generateQuiz({ title, description: description || '', referenceText });
             if (generatedQuiz && generatedQuiz.questions.length > 0) {
                 setQuiz(generatedQuiz);
             } else {
@@ -79,7 +80,7 @@ export function VideoPlayer({ isOpen, onClose, title, description, gdriveLink, u
       setIsQuizOpen(false);
       setIsQuizTriggered(false);
     }
-  }, [isOpen, title, description]);
+  }, [isOpen, title, description, referenceText, quiz, isQuizLoading, toast]);
 
 
   useEffect(() => {

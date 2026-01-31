@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A flow to generate a quiz for a video.
@@ -13,6 +14,10 @@ import {z} from 'zod';
 export const GenerateQuizInputSchema = z.object({
   title: z.string().describe('The title of the video.'),
   description: z.string().describe('The description of the video.'),
+  referenceText: z
+    .string()
+    .optional()
+    .describe('Optional reference text for generating the quiz.'),
 });
 export type GenerateQuizInput = z.infer<typeof GenerateQuizInputSchema>;
 
@@ -39,10 +44,19 @@ const quizPrompt = ai.definePrompt({
   name: 'quizPrompt',
   input: {schema: GenerateQuizInputSchema},
   output: {schema: GenerateQuizOutputSchema},
-  prompt: `You are an expert educator. Based on the following video title and description, generate a short multiple-choice quiz with 3 to 5 questions to test a student's understanding. For each question, provide 4 plausible options and indicate the correct answer.
+  prompt: `You are an expert educator. Based on the following video title, description, and optional reference text, generate a short multiple-choice quiz with 3 to 5 questions to test a student's understanding.
+
+If reference text is provided, use it as the primary source and focus on the parts most relevant to the video's title. If no reference text is provided, use the title and description only.
+
+For each question, provide 4 plausible options and indicate the correct answer.
 
 Video Title: {{{title}}}
 Video Description: {{{description}}}
+
+{{#if referenceText}}
+Reference Text:
+{{{referenceText}}}
+{{/if}}
 
 Generate the quiz now.`,
 });

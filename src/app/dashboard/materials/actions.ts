@@ -76,6 +76,7 @@ interface UpdateFormState {
         materialType?: string[];
         url?: string[];
         topic?: string[];
+        referenceText?: string[];
     }
 }
 
@@ -117,6 +118,31 @@ export async function updateMaterialAction(
     type: materialType,
     topic: topic === 'general' ? '' : topic || '',
   };
+  
+  if (materialType === 'video') {
+    const referenceFile = formData.get('referenceText') as File;
+    if (referenceFile && referenceFile.size > 0) {
+      if (referenceFile.type !== 'text/plain') {
+        return { 
+          success: false, 
+          message: 'Invalid reference file type. Only .txt files are allowed.', 
+          errors: { referenceText: ['Only .txt files are allowed.'] }
+        };
+      }
+      try {
+        updatedMaterial.referenceText = await referenceFile.text();
+      } catch (error) {
+        return { 
+          success: false, 
+          message: 'Could not read the reference file.', 
+          errors: { referenceText: ['Error reading file.'] }
+        };
+      }
+    }
+  } else {
+    // Clear reference text if material type is not video
+    updatedMaterial.referenceText = undefined;
+  }
 
   if (materialType === 'video' || materialType === 'document' || materialType === 'past-paper') {
     const url = formData.get('url') as string;
