@@ -76,7 +76,7 @@ export async function uploadMaterialAction(
     description: description || '',
     subject,
     type: materialType,
-    imageId: `course-${Math.floor(Math.random() * 6) + 1}`, // Random placeholder image
+    imageId: '', // No longer assign a random placeholder image
     url: '',
   };
 
