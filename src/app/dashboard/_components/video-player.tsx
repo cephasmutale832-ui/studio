@@ -15,6 +15,7 @@ import { Download, XCircle, LoaderCircle } from 'lucide-react';
 import { QuizDialog } from './quiz-dialog';
 import { generateQuiz } from './quiz-actions';
 import { type GenerateQuizOutput } from '@/ai/flows/generate-quiz-flow';
+import { useToast } from '@/hooks/use-toast';
 
 
 interface VideoPlayerProps {
@@ -31,6 +32,7 @@ export function VideoPlayer({ isOpen, onClose, title, description, gdriveLink, u
   const [isQuizLoading, setIsQuizLoading] = useState(false);
   const [isQuizOpen, setIsQuizOpen] = useState(false);
   const [isQuizTriggered, setIsQuizTriggered] = useState(false);
+  const { toast } = useToast();
 
   const getFileId = (url: string): string | null => {
     if (!url) return null;
@@ -48,54 +50,89 @@ export function VideoPlayer({ isOpen, onClose, title, description, gdriveLink, u
       const fetchQuiz = async () => {
         setIsQuizLoading(true);
         setIsQuizTriggered(false);
-        const generatedQuiz = await generateQuiz({ title, description: description || '' });
-        setQuiz(generatedQuiz);
-        setIsQuizLoading(false);
+        try {
+            const generatedQuiz = await generateQuiz({ title, description: description || '' });
+            if (generatedQuiz && generatedQuiz.questions.length > 0) {
+                setQuiz(generatedQuiz);
+            } else {
+                console.log("Quiz generation resulted in 0 questions. The quiz will not be shown.");
+                setQuiz(null);
+            }
+        } catch (error) {
+            console.error('Failed to fetch quiz:', error);
+            toast({
+                title: 'Quiz Generation Failed',
+                description: 'Could not generate a quiz for this video. Please try again later.',
+                variant: 'destructive',
+            });
+            setQuiz(null);
+        } finally {
+            setIsQuizLoading(false);
+        }
       };
       fetchQuiz();
     }
+    
     if (!isOpen) {
       // Reset on close
       setQuiz(null);
       setIsQuizOpen(false);
       setIsQuizTriggered(false);
     }
-  }, [isOpen, title, description, quiz, isQuizLoading]);
+  }, [isOpen, title, description]);
 
 
   useEffect(() => {
     if (!isOpen) return;
 
     // Simulate video playback progress.
-    const DURATION_IN_SECONDS = 15 * 60;
+    const DURATION_IN_SECONDS = 15 * 60; // 15 mins simulation
     const UPDATE_INTERVAL_IN_MS = 1000;
     const progressIncrement = 100 / DURATION_IN_SECONDS;
 
-    let currentProgress = 0;
+    let progressInterval: NodeJS.Timeout | null = null;
+    
+    const startProgressSimulation = () => {
+      progressInterval = setInterval(() => {
+        let shouldStop = false;
+        updateProgress(prevProgress => {
+          if (prevProgress >= 100) {
+            shouldStop = true;
+            return 100;
+          }
+          const currentProgress = prevProgress + progressIncrement;
 
-    const progressInterval = setInterval(() => {
-      updateProgress(prevProgress => {
-        if (prevProgress >= 100) {
-          clearInterval(progressInterval);
-          return 100;
-        }
-        currentProgress = prevProgress + progressIncrement;
+          // Trigger quiz at 80%
+          if (currentProgress >= 80 && !isQuizTriggered && quiz && quiz.questions.length > 0) {
+              setIsQuizOpen(true);
+              setIsQuizTriggered(true); // Ensure it only triggers once
+          }
+          
+          return currentProgress;
+        });
 
-        // Trigger quiz at 80%
-        if (currentProgress >= 80 && !isQuizTriggered && quiz && quiz.questions.length > 0) {
-            setIsQuizOpen(true);
-            setIsQuizTriggered(true); // Ensure it only triggers once
+        if (shouldStop && progressInterval) {
+            clearInterval(progressInterval);
         }
-        
-        return currentProgress;
-      });
-    }, UPDATE_INTERVAL_IN_MS);
+
+      }, UPDATE_INTERVAL_IN_MS);
+    }
+    
+    startProgressSimulation();
 
     // Cleanup on close
     return () => {
-      clearInterval(progressInterval);
+      if (progressInterval) {
+        clearInterval(progressInterval);
+      }
     };
   }, [isOpen, updateProgress, isQuizTriggered, quiz]);
+  
+  const handleQuizClose = () => {
+      setIsQuizOpen(false);
+      // Optional: uncomment to mark video as complete after quiz
+      // updateProgress(100);
+  }
 
   return (
     <>
@@ -147,7 +184,7 @@ export function VideoPlayer({ isOpen, onClose, title, description, gdriveLink, u
       {quiz && (
         <QuizDialog 
           isOpen={isQuizOpen}
-          onClose={() => setIsQuizOpen(false)}
+          onClose={handleQuizClose}
           questions={quiz.questions}
           videoTitle={title}
         />

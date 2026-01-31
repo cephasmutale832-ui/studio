@@ -8,7 +8,7 @@ export async function generateQuiz(input: GenerateQuizInput): Promise<GenerateQu
         return quiz;
     } catch (error) {
         console.error('Error generating quiz:', error);
-        // Return an empty quiz or throw, let's return empty for now to not break the UI
-        return { questions: [] };
+        // Re-throw so the client can handle it, e.g. with a toast message.
+        throw new Error('An error occurred while generating the quiz.');
     }
 }
