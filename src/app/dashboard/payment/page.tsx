@@ -6,13 +6,12 @@ import { useFormStatus } from 'react-dom';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-import { validatePaymentCodeAction } from './actions';
+import { validatePaymentCodeAction, validateTransactionDetailsAction } from './actions';
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -21,8 +20,10 @@ import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CheckCircle2, LoaderCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
 
-function SubmitButton() {
+function CodeSubmitButton() {
   const { pending } = useFormStatus();
   return (
     <Button className="w-full" type="submit" disabled={pending}>
@@ -38,16 +39,35 @@ function SubmitButton() {
   );
 }
 
+function AISubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button className="w-full" type="submit" disabled={pending}>
+      {pending ? (
+        <>
+          <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+          Submitting for AI Validation...
+        </>
+      ) : (
+        'Validate with AI'
+      )}
+    </Button>
+  );
+}
+
+
 export default function PaymentPage() {
-  const [state, formAction] = useActionState(validatePaymentCodeAction, null);
+  const [codeState, codeFormAction] = useActionState(validatePaymentCodeAction, null);
+  const [aiState, aiFormAction] = useActionState(validateTransactionDetailsAction, null);
   const router = useRouter();
   const { toast } = useToast();
 
   useEffect(() => {
-    if (state?.success === true) {
-      toast({
+    const successfulState = codeState?.success ? codeState : aiState?.success ? aiState : null;
+    if (successfulState) {
+       toast({
         title: "Payment Validated!",
-        description: "Your access has been restored. Redirecting to dashboard...",
+        description: successfulState.message || "Your access has been restored. Redirecting to dashboard...",
         variant: 'default',
       });
       const timer = setTimeout(() => {
@@ -56,7 +76,7 @@ export default function PaymentPage() {
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [state, router, toast]);
+  }, [codeState, aiState, router, toast]);
 
   return (
     <div className="mx-auto grid w-full max-w-2xl gap-6">
@@ -70,38 +90,72 @@ export default function PaymentPage() {
         <CardHeader>
           <CardTitle>Payment Validation</CardTitle>
           <CardDescription>
-            Enter the unique code sent to your WhatsApp to validate your payment and get full access.
+            Choose a validation method below.
           </CardDescription>
         </CardHeader>
-        <form action={formAction}>
-          <CardContent>
-            <div className="grid gap-2">
-              <Label htmlFor="validation-code">Validation Code</Label>
-              <Input
-                id="validation-code"
-                name="validationCode"
-                placeholder="e.g., MANGO123ABC"
-                required
-              />
-            </div>
-          </CardContent>
-          <CardFooter className="flex-col items-start gap-4">
-            <SubmitButton />
-             {state?.message && (
-              <Alert variant={state.success ? 'default' : 'destructive'}>
-                {state.success ? (
-                  <CheckCircle2 className="h-4 w-4" />
-                ) : (
-                  <XCircle className="h-4 w-4" />
+        <CardContent>
+          <Tabs defaultValue="code" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="code">Use Validation Code</TabsTrigger>
+              <TabsTrigger value="ai">Use AI Validator</TabsTrigger>
+            </TabsList>
+            <TabsContent value="code" className="pt-6">
+                <form action={codeFormAction} className="space-y-4">
+                    <p className="text-sm text-muted-foreground">
+                        Enter the unique code sent to your WhatsApp to validate your payment and get full access.
+                    </p>
+                    <div className="grid gap-2">
+                        <Label htmlFor="validation-code">Validation Code</Label>
+                        <Input
+                            id="validation-code"
+                            name="validationCode"
+                            placeholder="e.g., MANGO123ABC"
+                            required
+                        />
+                    </div>
+                    <CodeSubmitButton />
+                    {codeState?.message && !codeState.success && (
+                        <Alert variant='destructive'>
+                            <XCircle className="h-4 w-4" />
+                            <AlertTitle>Validation Failed</AlertTitle>
+                            <AlertDescription>{codeState.message}</AlertDescription>
+                        </Alert>
+                    )}
+                </form>
+            </TabsContent>
+            <TabsContent value="ai" className="pt-6">
+              <form action={aiFormAction} className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                    Paste your transaction details from Airtel Money, MTN Money, or another service below. Our AI will analyze it to confirm your payment.
+                </p>
+                <div className="grid gap-2">
+                    <Label htmlFor="transaction-details">Transaction Details</Label>
+                    <Textarea
+                        id="transaction-details"
+                        name="transactionDetails"
+                        placeholder="e.g., Money sent to Cephas Mutale, Amount: ZMW 70..."
+                        required
+                        className="min-h-[150px]"
+                    />
+                </div>
+                <AISubmitButton />
+                {aiState?.message && (
+                    <Alert variant={aiState.success ? 'default' : 'destructive'}>
+                    {aiState.success ? (
+                        <CheckCircle2 className="h-4 w-4" />
+                    ) : (
+                        <XCircle className="h-4 w-4" />
+                    )}
+                    <AlertTitle>
+                        {aiState.success ? 'Validation Result' : 'Validation Failed'}
+                    </AlertTitle>
+                    <AlertDescription>{aiState.message}</AlertDescription>
+                    </Alert>
                 )}
-                <AlertTitle>
-                  {state.success ? 'Validation Successful' : 'Validation Failed'}
-                </AlertTitle>
-                <AlertDescription>{state.message}</AlertDescription>
-              </Alert>
-            )}
-          </CardFooter>
-        </form>
+              </form>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
       </Card>
     </div>
   );
