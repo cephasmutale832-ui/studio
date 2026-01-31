@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -168,7 +169,7 @@ const Sidebar = React.forwardRef<
     {
       side = "left",
       variant = "sidebar",
-      collapsible = "offcanvas",
+      collapsible = "icon",
       className,
       children,
       ...props
@@ -289,20 +290,74 @@ const SidebarRail = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button">
 >(({ className, ...props }, ref) => {
-  const { toggleSidebar } = useSidebar()
+  const { toggleSidebar, setOpen } = useSidebar();
+  const railRef = React.useRef<HTMLButtonElement>(null);
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const sidebarWrapper = e.currentTarget.closest('.group\\/sidebar-wrapper');
+    if (!sidebarWrapper) return;
+    
+    const sidebar = e.currentTarget.closest('[data-side]');
+    const side = sidebar?.getAttribute('data-side') || 'left';
+    
+    const initialWidth = sidebar?.clientWidth || 0;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      document.body.style.cursor = side === 'left' ? 'ew-resize' : 'we-resize';
+      let newWidth;
+      if (side === 'left') {
+        newWidth = initialWidth + (moveEvent.clientX - startX);
+      } else {
+        newWidth = initialWidth - (moveEvent.clientX - startX);
+      }
+
+      // Clamp the width
+      const minWidth = 12 * 16; // 12rem
+      const maxWidth = 30 * 16; // 30rem
+      if (newWidth < minWidth) newWidth = minWidth;
+      if (newWidth > maxWidth) newWidth = maxWidth;
+
+      (sidebarWrapper as HTMLElement).style.setProperty('--sidebar-width', `${newWidth}px`);
+    };
+
+    const handleMouseUp = (upEvent: MouseEvent) => {
+      document.body.style.cursor = '';
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      
+      const movedDistance = Math.abs(upEvent.clientX - startX);
+
+      if (movedDistance < 5) {
+        toggleSidebar();
+      } else {
+        const currentWidth = (sidebarWrapper as HTMLElement).style.getPropertyValue('--sidebar-width');
+        const numericWidth = parseInt(currentWidth, 10);
+        if (numericWidth < 14 * 16) { // if less than 14rem, snap to collapsed
+          setOpen(false);
+           (sidebarWrapper as HTMLElement).style.removeProperty('--sidebar-width');
+        } else {
+          setOpen(true);
+        }
+      }
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
 
   return (
     <button
       ref={ref}
+      onMouseDown={handleMouseDown}
       data-sidebar="rail"
-      aria-label="Toggle Sidebar"
-      tabIndex={-1}
-      onClick={toggleSidebar}
-      title="Toggle Sidebar"
+      aria-label="Toggle or resize sidebar"
+      title="Toggle or resize sidebar"
       className={cn(
-        "absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-sidebar-border group-data-[side=left]:-right-4 group-data-[side=right]:left-0 sm:flex",
-        "[[data-side=left]_&]:cursor-w-resize [[data-side=right]_&]:cursor-e-resize",
-        "[[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-w-resize",
+        "absolute inset-y-0 z-20 hidden w-2 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[1px] group-hover:after:bg-border/80 group-data-[side=left]:-right-1 group-data-[side=right]:-left-1 sm:flex",
+        "[[data-side=left]_&]:cursor-ew-resize [[data-side=right]_&]:cursor-we-resize",
         "group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full group-data-[collapsible=offcanvas]:hover:bg-sidebar",
         "[[data-side=left][data-collapsible=offcanvas]_&]:-right-2",
         "[[data-side=right][data-collapsible=offcanvas]_&]:-left-2",
@@ -358,7 +413,7 @@ const SidebarHeader = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="header"
-      className={cn("flex flex-col gap-2 p-2", className)}
+      className={cn("flex items-center gap-2 p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:h-11", className)}
       {...props}
     />
   )
@@ -373,7 +428,7 @@ const SidebarFooter = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="footer"
-      className={cn("flex flex-col gap-2 p-2", className)}
+      className={cn("flex flex-col gap-2 p-2 mt-auto", className)}
       {...props}
     />
   )
@@ -404,7 +459,7 @@ const SidebarContent = React.forwardRef<
       ref={ref}
       data-sidebar="content"
       className={cn(
-        "flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden",
+        "flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden p-2",
         className
       )}
       {...props}
@@ -523,7 +578,7 @@ const sidebarMenuButtonVariants = cva(
       size: {
         default: "h-8 text-sm",
         sm: "h-7 text-xs",
-        lg: "h-12 text-sm group-data-[collapsible=icon]:!p-0",
+        lg: "h-12 text-base group-data-[collapsible=icon]:!h-11 group-data-[collapsible=icon]:!p-3 [&>svg]:group-data-[collapsible=icon]:size-5",
       },
     },
     defaultVariants: {
@@ -549,6 +604,7 @@ const SidebarMenuButton = React.forwardRef<
       size = "default",
       tooltip,
       className,
+      children,
       ...props
     },
     ref
@@ -564,7 +620,10 @@ const SidebarMenuButton = React.forwardRef<
         data-active={isActive}
         className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
         {...props}
-      />
+      >
+        {children}
+        <span className="group-data-[collapsible=icon]:hidden">{props.title}</span>
+      </Comp>
     )
 
     if (!tooltip) {
