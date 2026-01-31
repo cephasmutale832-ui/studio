@@ -8,6 +8,7 @@ import {
   Upload,
   Users,
   PanelLeft,
+  ChevronsUpDown,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -87,6 +88,16 @@ export default async function DashboardLayout({
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                      )}
+                    {isAdmin && (
+                        <SidebarMenuItem>
+                            <SidebarMenuButton asChild tooltip="Rearrange Materials">
+                                <Link href="/dashboard/rearrange">
+                                    <ChevronsUpDown />
+                                    <span>Rearrange</span>
+                                </Link>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                     )}
                      {isAdmin && (
                         <SidebarMenuItem>
                             <SidebarMenuButton asChild tooltip="Manage Users">
@@ -114,7 +125,7 @@ export default async function DashboardLayout({
         </Sidebar>
         <SidebarInset>
             <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-                <SidebarTrigger variant="outline" className="md:hidden">
+                <SidebarTrigger className="md:hidden">
                     <PanelLeft className="h-5 w-5" />
                     <span className="sr-only">Toggle Menu</span>
                 </SidebarTrigger>
