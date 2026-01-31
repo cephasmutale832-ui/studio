@@ -1,0 +1,49 @@
+{
+  "quizzes": [
+    {
+      "topic": "Wave motion theory",
+      "questions": [
+        {
+          "question": "What is the primary characteristic of a transverse wave?",
+          "options": [
+            "Particles oscillate parallel to the direction of energy transfer.",
+            "Particles oscillate perpendicular to the direction of energy transfer.",
+            "It does not require a medium to travel.",
+            "It is a type of sound wave."
+          ],
+          "correctAnswer": "Particles oscillate perpendicular to the direction of energy transfer."
+        },
+        {
+          "question": "Which of the following is an example of a longitudinal wave?",
+          "options": [
+            "Light wave",
+            "Ripple on water",
+            "Sound wave",
+            "Wave on a string"
+          ],
+          "correctAnswer": "Sound wave"
+        },
+        {
+          "question": "What does the amplitude of a wave represent?",
+          "options": [
+            "The speed of the wave",
+            "The number of waves passing a point per second",
+            "The maximum displacement from the equilibrium position",
+            "The distance between two consecutive crests"
+          ],
+          "correctAnswer": "The maximum displacement from the equilibrium position"
+        },
+        {
+          "question": "The speed of a wave (v) is related to its frequency (f) and wavelength (λ) by the equation:",
+          "options": [
+            "v = f / λ",
+            "v = λ / f",
+            "v = f * λ",
+            "v = f + λ"
+          ],
+          "correctAnswer": "v = f * λ"
+        }
+      ]
+    }
+  ]
+}

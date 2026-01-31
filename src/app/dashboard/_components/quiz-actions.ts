@@ -7,6 +7,7 @@ import { generateQuizForVideo, type GenerateQuizInput, type GenerateQuizOutput }
 import { type Material } from '@/lib/types';
 
 const materialsFilePath = path.join(process.cwd(), 'src', 'lib', 'materials.json');
+const physicsQuizFilePath = path.join(process.cwd(), 'src', 'lib', 'physics-quiz.json');
 
 async function getMaterials(): Promise<Material[]> {
     try {
@@ -22,9 +23,36 @@ async function getMaterials(): Promise<Material[]> {
     }
 }
 
+async function getPhysicsQuiz(topic?: string): Promise<GenerateQuizOutput | null> {
+    if (!topic) return null;
+    try {
+        const fileContents = await fs.readFile(physicsQuizFilePath, 'utf8');
+        const data = JSON.parse(fileContents);
+        const quizData = data.quizzes.find((q: any) => q.topic === topic);
+        if (quizData && quizData.questions) {
+            return { questions: quizData.questions };
+        }
+        return null;
+    } catch (error) {
+        if (error instanceof Error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
+            return null; // File doesn't exist, which is fine. Fallback to AI.
+        }
+        console.error("Error reading physics quiz file:", error);
+        return null;
+    }
+}
+
 
 export async function generateQuiz(input: GenerateQuizInput): Promise<GenerateQuizOutput> {
     const { title, description, referenceText, subject, topic } = input;
+    
+    // If subject is Physics (SCIENCE P1), try to load a static quiz.
+    if (subject === 'SCIENCE P1') {
+        const staticQuiz = await getPhysicsQuiz(topic);
+        if (staticQuiz) {
+            return staticQuiz;
+        }
+    }
     
     let videoReferenceText = referenceText || '';
 
