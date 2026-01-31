@@ -37,17 +37,21 @@ export function VideoPlayer({ isOpen, onClose, title, gdriveLink, updateProgress
     if (!isOpen) return;
 
     // Simulate video playback progress. In a real scenario, you would use
-    // a video player API to get actual watch time.
+    // a video player API to get actual watch time. For Google Drive, this is not possible.
+    // We'll simulate progress over a 15-minute period (900 seconds).
+    const DURATION_IN_SECONDS = 15 * 60;
+    const UPDATE_INTERVAL_IN_MS = 1000; // 1 second
+    const progressIncrement = 100 / DURATION_IN_SECONDS;
+
     const progressInterval = setInterval(() => {
       updateProgress(prevProgress => {
         if (prevProgress >= 100) {
           clearInterval(progressInterval);
           return 100;
         }
-        // Increment progress by 5 every 3 seconds to simulate watching
-        return prevProgress + 5;
+        return prevProgress + progressIncrement;
       });
-    }, 3000); // Update every 3 seconds
+    }, UPDATE_INTERVAL_IN_MS);
 
     // Cleanup on close
     return () => {
