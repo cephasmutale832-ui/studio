@@ -38,9 +38,9 @@ export function MaterialCard({ material, image, userRole, isLocked, previousMate
   const { toast } = useToast();
   const router = useRouter();
 
-  // A video is sequentially locked if the user is registered, it's a video,
+  // A video is sequentially locked if the user is a registered student, it's a video,
   // it has a preceding video, and that video is not 100% complete.
-  const isSequentiallyLocked = isRegistered && material.type === 'video' && !!previousMaterialId && prevProgress < 100;
+  const isSequentiallyLocked = isRegistered && userRole === 'student' && material.type === 'video' && !!previousMaterialId && prevProgress < 100;
 
   const finalIsLocked = isLocked || isSequentiallyLocked;
 
